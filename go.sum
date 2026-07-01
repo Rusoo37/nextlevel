@@ -1,2 +1,6 @@
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/lib/pq v1.12.3 h1:tTWxr2YLKwIvK90ZXEw8GP7UFHtcbTtty8zsI+YjrfQ=
 github.com/lib/pq v1.12.3/go.mod h1:/p+8NSbOcwzAEI7wiMXFlgydTwcgTr3OSKMsD2BitpA=
+github.com/mercadopago/sdk-go v1.12.0 h1:wcBA3mnFAo1qHPMcvS/Au4ZsImEQDtguHmQ1/eFYyCE=
+github.com/mercadopago/sdk-go v1.12.0/go.mod h1:hvQlOYb3MuYPGfjox7jeGBFbeL0nS+iPwUnxAv6yGWI=

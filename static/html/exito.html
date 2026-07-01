@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Turno Confirmado!</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .icon { font-size: 4rem; text-align: center; margin: 10px 0; }
+        .text-center { text-align: center; }
+        .ticket {
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .ticket p { margin: 8px 0; color: #374151; }
+    </style>
+</head>
+<body>
+<div class="container text-center">
+    <div class="icon">✅</div>
+    <h1 style="color: #10b981;">¡Pago Exitoso!</h1>
+    
+    <div class="ticket">
+        <p>👤 <strong>Cliente:</strong> <span id="lblNombre">Cargando...</span></p>
+        <p>📅 <strong>Turno:</strong> <span id="lblFecha">Cargando...</span> hs</p>
+        <p>🧾 <strong>Comprobante MP:</strong> <span id="lblPago">Cargando...</span></p>
+    </div>
+
+    <p style="font-size: 0.9rem; color: #6b7280;">Tu seña fue procesada correctamente y tu lugar está asegurado. ¡Te esperamos en NextLevel!</p>
+    <br>
+    <a href="/" style="text-decoration: none;">
+        <button class="btn-submit">Volver al inicio</button>
+    </a>
+</div>
+
+<script>
+    // 1. Extraemos los datos que Mercado Pago mandó en la URL
+    const parametros = new URLSearchParams(window.location.search);
+    const idPago = parametros.get('payment_id');
+    const idTurno = parametros.get('external_reference');
+
+    // Mostramos el ID del pago de Mercado Pago
+    document.getElementById('lblPago').textContent = idPago || 'No disponible';
+
+    // 2. Le pedimos a nuestra API los datos exactos del turno
+    if (idTurno) {
+        fetch(`/api/turno?id=${idTurno}`)
+            .then(respuesta => respuesta.json())
+            .then(data => {
+                document.getElementById('lblNombre').textContent = data.nombre;
+                document.getElementById('lblFecha').textContent = data.fecha;
+            })
+            .catch(error => {
+                document.getElementById('lblNombre').textContent = "Error al cargar";
+                document.getElementById('lblFecha').textContent = "Error al cargar";
+            });
+    }
+</script>
+</body>
+</html>

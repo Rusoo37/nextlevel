@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextLevel</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>✂️ NextLevel Necochea</h1>
+    <p class="subtitle">Reserva tu turno</p>
+
+    <label for="fechaTurno">Elegí el día:</label>
+    <input type="date" id="fechaTurno">
+
+    <div id="contenedorHorarios" class="hidden">
+        <label>Horarios disponibles:</label>
+        <div class="grid-horarios" id="grillaHorarios"></div>
+    </div>
+
+    <div id="formularioReserva" class="hidden">
+        <label>Completá tus datos:</label>
+        <input type="text" id="nombreCliente" placeholder="Tu nombre completo" required>
+        <input type="tel" id="telefonoCliente" placeholder="Teléfono (ej: 2262...)" required>
+        <input type="email" id="emailCliente" placeholder="Tu email (opcional)">
+        
+        <div id="mensajeError"></div>
+        <button id="btnReservar" class="btn-submit">Abonar Seña ($7.500)</button>
+    </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>

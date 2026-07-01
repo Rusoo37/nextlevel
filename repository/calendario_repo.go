@@ -2,9 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"time"
-
 	"nextlevel/models"
+	"time"
 )
 
 // ObtenerTurnosPorFecha busca turnos ocupados para un día específico
@@ -60,50 +59,4 @@ func ObtenerTurnosFijosPorDia(db *sql.DB, diaSemana int) ([]models.TurnoFijo, er
 		fijos = append(fijos, tf)
 	}
 	return fijos, nil
-}
-
-// CrearReservaTemporal intenta guardar un turno bloqueándolo para que el cliente pague
-func CrearReservaTemporal(db *sql.DB, inicio time.Time, nombre, telefono, email string) (int, error) {
-	// Calculamos el fin del turno (30 min después)
-	fin := inicio.Add(30 * time.Minute)
-
-	// Usamos un valor fijo para la seña por ahora (la mitad de 15.000)
-	sena := 7500.00
-
-	var idInsertado int
-	query := `
-		INSERT INTO turnos (fecha_hora_inicio, fecha_hora_fin, nombre_cliente, telefono, email, estado, monto_senado)
-		VALUES ($1, $2, $3, $4, $5, 'PENDIENTE_PAGO', $6) 
-		RETURNING id
-	`
-
-	// Intentamos insertar. Si Juan y María llegan a la vez, el índice único que creamos
-	// hará que a uno de los dos le salte un error acá.
-	err := db.QueryRow(query, inicio, fin, nombre, telefono, email, sena).Scan(&idInsertado)
-	if err != nil {
-		return 0, err
-	}
-
-	return idInsertado, nil
-}
-
-// CancelarTurnosExpirados cambia a CANCELADO los turnos que no se pagaron a tiempo
-func CancelarTurnosExpirados(db *sql.DB, minutos int) (int64, error) {
-	// Calculamos qué hora era hace 'X' minutos atrás
-	tiempoLimite := time.Now().Add(-time.Duration(minutos) * time.Minute)
-
-	query := `
-		UPDATE turnos 
-		SET estado = 'CANCELADO' 
-		WHERE estado = 'PENDIENTE_PAGO' 
-		AND creado_en < $1
-	`
-
-	resultado, err := db.Exec(query, tiempoLimite)
-	if err != nil {
-		return 0, err
-	}
-
-	// Devolvemos cuántas filas se cancelaron para llevar un control
-	return resultado.RowsAffected()
 }

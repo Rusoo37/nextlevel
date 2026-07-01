@@ -34,11 +34,21 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", handlers.IndexHandler)
+	http.HandleFunc("/exito", handlers.ExitoHandler)
+	http.HandleFunc("/fallo", handlers.FalloHandler)
+	http.HandleFunc("/pendiente", handlers.PendienteHandler)
 
 	// Instanciamos el handler de la API pasándole la base de datos
 	api := &handlers.APIHandler{DB: db}
 	http.HandleFunc("/api/disponibilidad", api.Disponibilidad)
 	http.HandleFunc("/api/reservar", api.Reservar)
+	http.HandleFunc("/api/webhook", api.WebhookMercadoPago)
+	http.HandleFunc("/api/turno", api.DetalleTurno)
+
+	// Rutas del Panel de Administración
+	http.HandleFunc("/admin", handlers.AdminHandler)
+	http.HandleFunc("/api/admin/turnos", api.AdminTurnosHandler)
+	http.HandleFunc("/api/admin/bloquear", api.BloquearHorarioAdmin)
 
 	// 4. Lanzar servidor
 	fmt.Println("Servidor corriendo en http://localhost:8080")
