@@ -20,11 +20,15 @@
 
 <div class="container admin-container">
     <div class="header-admin">
-        <h1>⚙️ Panel Ramón</h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <h1 style="margin: 0;">⚙️ Panel de Control</h1>
+            <button id="btnAbrirConfig" class="btn-submit" style="background: #4b5563; padding: 8px 12px; margin: 0; width: auto; font-size: 0.9rem;">Configuración</button>
+            <button id="btnAbrirBloqueos" class="btn-submit" style="background: #dc2626; padding: 8px 12px; margin: 0; width: auto; font-size: 0.9rem;">Bloqueos</button>
+        </div>
+        
         <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="date" id="fechaFiltro">
-            <input type="time" id="horaBloqueo" step="1800">
-            <button id="btnBloquear" class="btn-submit" style="margin-top: 0; padding: 10px; background: #dc2626; width: auto;">Bloquear</button>
+            <label style="font-weight: 600; color: #374151;">Ver agenda:</label>
+            <input type="date" id="fechaFiltro" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
         </div>
     </div>
     <p class="subtitle">Gestión de Turnos Diarios</p>
@@ -42,6 +46,126 @@
             <tr><td colspan="4" style="text-align:center;">Cargando turnos...</td></tr>
         </tbody>
     </table>
+</div>
+
+<div id="modalConfig" class="modal hidden">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: end; align-items: center; margin-bottom: 10px;">
+            <button id="btnCerrarConfig" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
+        </div>
+        
+        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-top: 0; margin-bottom: 10px; color: #1e293b;">💰 Configuración de Precios</h3>
+            <div style="display: flex; gap: 15px; align-items: flex-end;">
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 600;">Precio Total ($):</label>
+                    <input type="number" id="inputPrecio" placeholder="Ej: 15000" style="width: 120px; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                </div>
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: 600;">Seña (%):</label>
+                    <input type="number" id="inputSena" placeholder="Ej: 50" style="width: 80px; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                </div>
+                <button id="btnGuardarPrecios" class="btn-submit" style="margin: 0; padding: 8px 15px; width: auto; background: #3b82f6;">Guardar</button>
+            </div>
+            <p id="msgPrecios" style="color: #10b981; font-size: 0.85rem; margin-top: 8px; margin-bottom: 0; display: none; font-weight: 600;">✅ Precios actualizados correctamente.</p>
+        </div>
+        
+        <div class="header-admin">
+            <h2>Turnos Fijos de la Semana</h2>
+        </div>
+        <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 15px;">Definí horarios recurrentes (ej: almuerzos, clientes fijos).</p>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end; justify-content: space-between;">
+            <div>
+                <label>Día:</label>
+                <select id="fijoDia" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                    <option value="2">Martes</option>
+                    <option value="3">Miércoles</option>
+                    <option value="4">Jueves</option>
+                    <option value="5">Viernes</option>
+                    <option value="6">Sábado</option>
+                </select>
+            </div>
+            <div>
+                <label>Hora:</label>
+                <input type="time" id="fijoHora" step="1800" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+            </div>
+            <div style="flex-grow: 1;">
+                <label>Motivo / Cliente:</label>
+                <input type="text" id="fijoNombre" placeholder="Ej: Almuerzo, Juan Perez..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+            </div>
+            <button id="btnGuardarFijo" class="btn-submit" style="margin: 0; padding: 10px; width: auto; background: #10b981; ">Guardar</button>
+        </div>
+
+        <table style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th>Día</th>
+                    <th>Hora</th>
+                    <th>Motivo / Cliente</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaFijos">
+                <tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="modalBloqueos" class="modal hidden">
+    <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0;">Gestión de Bloqueos</h2>
+            <button id="btnCerrarBloqueos" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
+        </div>
+
+        <div style="background-color: #fff1f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecdd3;">
+            <h3 style="margin-top: 0; margin-bottom: 10px; color: #9f1239;">Bloquear Horario Específico</h3>
+            <p style="font-size: 0.85rem; color: #e11d48; margin-top: 0;">Usalo para imprevistos o sobreturnos en una fecha puntual.</p>
+            <div style="display: flex; gap: 10px; align-items: flex-end;">
+                <div>
+                    <label>Fecha:</label>
+                    <input type="date" id="fechaBloqueoManual" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+                </div>
+                <div>
+                    <label>Hora:</label>
+                    <input type="time" id="horaBloqueoManual" step="1800" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                </div>
+                <button id="btnEjecutarBloqueo" class="btn-submit" style="margin: 0; padding: 10px; width: auto; background: #be123c;">Bloquear Hora</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <h3 style="margin-top: 0; color: #1e293b;">Bloquear Día Completo (Vacaciones)</h3>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
+                <div>
+                    <label>Fecha:</label>
+                    <input type="date" id="excFecha" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+                </div>
+                <div style="flex-grow: 1;">
+                    <label>Motivo:</label>
+                    <input type="text" id="excMotivo" placeholder="Ej: Feriado Nacional, Vacaciones..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+                </div>
+                <button id="btnGuardarExc" class="btn-submit" style="margin: 0; padding: 10px; width: auto; background: #dc2626;">Bloquear Día</button>
+            </div>
+            
+            <table style="margin-top: 0;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaExcepciones">
+                    <tr><td colspan="3" style="text-align:center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 </div>
 
 <script src="/static/js/appAdmin.js"></script>

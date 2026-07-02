@@ -33,6 +33,9 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	http.HandleFunc("/login", handlers.LoginVistaHandler)
+	http.HandleFunc("/api/login", handlers.LoginProcesoHandler)
+
 	http.HandleFunc("/", handlers.IndexHandler)
 	http.HandleFunc("/exito", handlers.ExitoHandler)
 	http.HandleFunc("/fallo", handlers.FalloHandler)
@@ -45,10 +48,14 @@ func main() {
 	http.HandleFunc("/api/webhook", api.WebhookMercadoPago)
 	http.HandleFunc("/api/turno", api.DetalleTurno)
 
-	// Rutas del Panel de Administración
-	http.HandleFunc("/admin", handlers.AdminHandler)
-	http.HandleFunc("/api/admin/turnos", api.AdminTurnosHandler)
-	http.HandleFunc("/api/admin/bloquear", api.BloquearHorarioAdmin)
+	// rutas de admin con middleware de autenticación
+	http.HandleFunc("/admin", handlers.AuthMiddleware(handlers.AdminHandler))
+	http.HandleFunc("/api/admin/turnos", handlers.AuthMiddleware(api.AdminTurnosHandler))
+	http.HandleFunc("/api/admin/bloquear", handlers.AuthMiddleware(api.BloquearHorarioAdmin))
+
+	http.HandleFunc("/api/admin/config/fijos", handlers.AuthMiddleware(api.ConfigFijosHandler))
+	http.HandleFunc("/api/admin/config/precios", handlers.AuthMiddleware(api.ConfigPreciosHandler))
+	http.HandleFunc("/api/admin/config/excepciones", handlers.AuthMiddleware(api.ConfigExcepcionesHandler))
 
 	// 4. Lanzar servidor
 	fmt.Println("Servidor corriendo en http://localhost:8080")

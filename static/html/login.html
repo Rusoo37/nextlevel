@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NextLevel</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f3f4f6; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 5px; box-sizing: border-box; }
+        #errorMsg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2 style="margin-top: 0;">✂️ Panel Ramón</h2>
+    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 20px;">Ingresá tus credenciales</p>
+    
+    <div class="input-group">
+        <label>Usuario</label>
+        <input type="text" id="usuario" placeholder="Ej: admin">
+    </div>
+    
+    <div class="input-group">
+        <label>Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••">
+    </div>
+
+    <button id="btnIngresar" class="btn-submit" style="width: 100%; margin-top: 10px;">Ingresar</button>
+    <p id="errorMsg">Credenciales incorrectas.</p>
+</div>
+
+<script>
+    document.getElementById('btnIngresar').addEventListener('click', async () => {
+        const usuario = document.getElementById('usuario').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('errorMsg');
+
+        try {
+            const respuesta = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, password })
+            });
+
+            if (respuesta.ok) {
+                // Si el login fue exitoso, el patovica nos dejó la cookie. Redirigimos al admin.
+                window.location.href = '/admin';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        } catch (error) {
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = "Error de conexión.";
+        }
+    });
+
+    // Permitir dar Enter para iniciar sesión
+    document.getElementById('password').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') document.getElementById('btnIngresar').click();
+    });
+</script>
+
+</body>
+</html>

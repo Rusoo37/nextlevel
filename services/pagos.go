@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"os"
 
 	// Usamos las rutas correctas del SDK de Go
 	"github.com/mercadopago/sdk-go/pkg/config"
@@ -22,8 +23,17 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 	// 2. Armamos el cliente de preferencias
 	client := preference.NewClient(cfg)
 
-	// 3. Definimos qué le estamos cobrando
-	// 3. Definimos qué le estamos cobrando
+	// 3. Lógica dinámica para la URL del Webhook
+	webhookURL := os.Getenv("WEBHOOK_URL")
+	if webhookURL == "" {
+		// Si no hay variable configurada (estás en tu compu), usamos Ngrok
+		webhookURL = "https://perm-cried-papyrus.ngrok-free.dev/api/webhook"
+	} else {
+		// Si hay variable (ej: estás en Render), le pegamos la ruta al final
+		webhookURL = webhookURL + "/api/webhook"
+	}
+
+	// 4. Definimos qué le estamos cobrando
 	request := preference.Request{
 		Items: []preference.ItemRequest{
 			{
@@ -35,6 +45,8 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 			},
 		},
 		BackURLs: &preference.BackURLsRequest{
+			// Nota: Cuando subamos a producción, estas URLs también las haremos dinámicas,
+			// pero por ahora está perfecto que apunten a tu dominio real.
 			Success: "https://nextlevel_necochea.com.ar/exito",
 			Failure: "https://nextlevel_necochea.com.ar/fallo",
 			Pending: "https://nextlevel_necochea.com.ar/pendiente",
@@ -42,18 +54,16 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 		AutoReturn:        "approved",
 		ExternalReference: fmt.Sprintf("%d", idTurno),
 
-		// ---------------------------------------------------------
-		// 🔥 LA CLAVE: Forzamos a MP a que avise acá
-		// ---------------------------------------------------------
-		NotificationURL: "https://perm-cried-papyrus.ngrok-free.dev/api/webhook",
+		// Usamos la variable dinámica que calculamos más arriba
+		NotificationURL: webhookURL,
 	}
 
-	// 4. Se lo mandamos a Mercado Pago
+	// 5. Se lo mandamos a Mercado Pago
 	resource, err := client.Create(context.Background(), request)
 	if err != nil {
 		return "", fmt.Errorf("error creando preferencia: %v", err)
 	}
 
-	// Devolvemos el link donde el usuario tiene que pagar (InitPoint)
+	// Devolvemos el link donde el usuario tiene que pagar
 	return resource.InitPoint, nil
 }

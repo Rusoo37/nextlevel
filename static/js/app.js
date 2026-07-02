@@ -2,6 +2,10 @@
 let fechaSeleccionada = '';
 let horaSeleccionada = '';
 
+document.addEventListener('DOMContentLoaded', () => {
+    cargarMontoSena();
+});
+
 const fechaInput = document.getElementById('fechaTurno');
 const grillaHorarios = document.getElementById('grillaHorarios');
 const contenedorHorarios = document.getElementById('contenedorHorarios');
@@ -99,3 +103,21 @@ btnReservar.addEventListener('click', async () => {
         btnReservar.textContent = "Abonar Seña ($7.500)";
     }
 });
+
+async function cargarMontoSena() {
+    try {
+        const respuesta = await fetch('/api/admin/config/precios');
+        const config = await respuesta.json();
+        
+        // Calculamos la seña tal cual lo hace Go
+        const montoSena = (config.precio_turno * config.porcentaje_sena) / 100;
+        
+        // Asumiendo que tu botón tiene el id="btnReservar"
+        const btnReservar = document.getElementById('btnReservar');
+        if (btnReservar) {
+            btnReservar.innerText = `Abonar Seña ($${montoSena})`;
+        }
+    } catch (error) {
+        console.error("Error obteniendo el precio de la seña:", error);
+    }
+}

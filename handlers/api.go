@@ -21,10 +21,19 @@ type APIHandler struct {
 
 // Disponibilidad maneja la petición GET /api/disponibilidad?fecha=YYYY-MM-DD
 func (api *APIHandler) Disponibilidad(w http.ResponseWriter, r *http.Request) {
+
 	// 1. Leer la fecha que manda el cliente por la URL
 	fechaStr := r.URL.Query().Get("fecha")
 	if fechaStr == "" {
 		http.Error(w, "Falta el parámetro 'fecha'", http.StatusBadRequest)
+		return
+	}
+	if repository.EsDiaExcepcion(api.DB, fechaStr) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"fecha":       fechaStr,
+			"disponibles": []string{}, // Lista vacía, no hay nada libre
+		})
 		return
 	}
 
@@ -98,8 +107,13 @@ func (api *APIHandler) Reservar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Formato de fecha inválido", http.StatusBadRequest)
 		return
 	}
+	config, errConfig := repository.ObtenerConfiguracion(api.DB)
+	if errConfig != nil {
+		http.Error(w, "Error interno leyendo configuración de precios", http.StatusInternalServerError)
+		return
+	}
 
-	montoSena := 7500.00
+	montoSena := float64(config.PorcentajeSena) / 100 * config.PrecioTurno
 	idTurno, err := repository.CrearReservaTemporal(api.DB, fechaInicio, solicitud.NombreCliente, solicitud.Telefono, solicitud.Email)
 
 	if err != nil {
@@ -129,37 +143,57 @@ func (api *APIHandler) Reservar(w http.ResponseWriter, r *http.Request) {
 }
 
 // WebhookMercadoPago recibe las notificaciones de pagos de MP
+// WebhookMercadoPago recibe las notificaciones de pagos de MP
 func (api *APIHandler) WebhookMercadoPago(w http.ResponseWriter, r *http.Request) {
-	// Mercado Pago nos manda el ID del evento (el pago) en el query string
-	log.Printf("📥 RECIBIENDO NOTIFICACIÓN: %v", r.URL.Query())
+	// 1. Agarramos el ID del pago que nos manda Mercado Pago
 	idPago := r.URL.Query().Get("data.id")
-
 	if idPago == "" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	// 1. Acá deberías llamar a la API de Mercado Pago para consultar el pago
-	// Pero para simplificar, vamos a asumir que recibimos el "ExternalReference"
-	// que configuramos al crear el pago (que es el ID de TU turno).
+	log.Printf("📥 RECIBIENDO NOTIFICACIÓN DEL PAGO ID: %s", idPago)
 
-	// Si usaste la librería de MP, deberías hacer algo como:
-	// paymentClient := payment.NewClient(os.Getenv("MP_ACCESS_TOKEN"))
-	// paymentData, _ := paymentClient.Get(idPago)
-	// idTurno := paymentData.ExternalReference
+	// 2. Le preguntamos a Mercado Pago: "Che, ¿qué onda este pago?"
+	url := "https://api.mercadopago.com/v1/payments/" + idPago
+	req, _ := http.NewRequest("GET", url, nil)
 
-	// HASTA QUE IMPLEMENTES LA CONSULTA REAL A MP,
-	// necesitamos que el Webhook reciba el turno.
-	// ¿Tu base de datos qué ID tiene guardado en 'id_mercadopago'?
-	// Quizás el Webhook no está encontrando el turno porque no le estás pasando el ID.
+	// Usamos tu mismo token de prueba para autorizar la pregunta
+	req.Header.Add("Authorization", "Bearer APP_USR-4638107181664481-070112-eaf8d20647e2a3813e36356163ae22ac-3509855779")
 
-	// CORRECCIÓN RÁPIDA:
-	// Asegurate de que cuando creás la preferencia en services/pagos.go
-	// hayas puesto: ExternalReference: fmt.Sprintf("%d", idTurno)
+	clienteHTTP := &http.Client{}
+	respuestaMP, err := clienteHTTP.Do(req)
+	if err != nil {
+		log.Printf("Error consultando a MP: %v", err)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	defer respuestaMP.Body.Close()
 
-	// Y en el Webhook, simplemente actualizá el turno donde el estado sea PENDIENTE_PAGO
-	// y el pago sea el que corresponde.
+	// 3. Leemos la respuesta de Mercado Pago
+	var dataPago struct {
+		ExternalReference string `json:"external_reference"`
+		Status            string `json:"status"`
+	}
+	json.NewDecoder(respuestaMP.Body).Decode(&dataPago)
 
+	// 4. Verificamos si el pago fue aprobado y sacamos nuestro ID de turno
+	if dataPago.Status == "approved" && dataPago.ExternalReference != "" {
+		idTurno, _ := strconv.Atoi(dataPago.ExternalReference)
+
+		// 5. ¡ACÁ ESTÁ LA MAGIA! Le avisamos a tu base de datos
+		err = repository.ConfirmarTurno(api.DB, idTurno, idPago)
+
+		if err != nil {
+			log.Printf("🚨 Error al confirmar turno en BD: %v", err)
+		} else {
+			log.Printf("✅ ¡ÉXITO! Turno %d confirmado en la base de datos.", idTurno)
+		}
+	} else {
+		log.Printf("⚠️ El pago %s no está aprobado o no tiene referencia. Estado: %s", idPago, dataPago.Status)
+	}
+
+	// 6. Siempre hay que responderle 200 OK a MP rápido para que deje de avisar
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -244,4 +278,169 @@ func (api *APIHandler) BloquearHorarioAdmin(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(map[string]string{
 		"mensaje": "Horario bloqueado exitosamente",
 	})
+}
+
+// ConfigFijosHandler maneja la lectura, creación y eliminación de turnos fijos
+func (api *APIHandler) ConfigFijosHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodGet {
+		fijos, err := repository.ObtenerTodosLosTurnosFijos(api.DB)
+		if err != nil {
+			http.Error(w, "Error al obtener configuración", http.StatusInternalServerError)
+			return
+		}
+		if fijos == nil {
+			fijos = []repository.TurnoFijo{}
+		}
+		json.NewEncoder(w).Encode(fijos)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		var peticion struct {
+			Accion        string `json:"accion"` // "guardar" o "eliminar"
+			DiaSemana     int    `json:"dia_semana"`
+			Hora          string `json:"hora"`
+			NombreCliente string `json:"nombre_cliente"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&peticion); err != nil {
+			http.Error(w, "Datos inválidos", http.StatusBadRequest)
+			return
+		}
+
+		if peticion.DiaSemana < 0 || peticion.DiaSemana > 6 {
+			http.Error(w, "Día de la semana inválido", http.StatusBadRequest)
+			return
+		}
+
+		var err error
+		if peticion.Accion == "guardar" {
+			// Si Ramón no puso nombre, le ponemos uno por defecto
+			if peticion.NombreCliente == "" {
+				peticion.NombreCliente = "Fijo/Personal"
+			}
+			err = repository.GuardarTurnoFijo(api.DB, peticion.DiaSemana, peticion.Hora, peticion.NombreCliente)
+		} else if peticion.Accion == "eliminar" {
+			err = repository.EliminarTurnoFijo(api.DB, peticion.DiaSemana, peticion.Hora)
+		} else {
+			http.Error(w, "Acción desconocida", http.StatusBadRequest)
+			return
+		}
+
+		if err != nil {
+			http.Error(w, "Error al procesar la regla", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"mensaje": "Configuración actualizada"})
+		return
+	}
+
+	http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+}
+
+// ConfigPreciosHandler maneja la vista y actualización de precios
+func (api *APIHandler) ConfigPreciosHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// Si es GET, devolvemos la configuración actual
+	if r.Method == http.MethodGet {
+		config, err := repository.ObtenerConfiguracion(api.DB)
+		if err != nil {
+			http.Error(w, "Error al obtener configuración", http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(config)
+		return
+	}
+
+	// Si es POST, Ramón está guardando nuevos precios
+	if r.Method == http.MethodPost {
+		var peticion struct {
+			Precio float64 `json:"precio_turno"`
+			Sena   int     `json:"porcentaje_sena"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&peticion); err != nil {
+			http.Error(w, "Datos inválidos", http.StatusBadRequest)
+			return
+		}
+
+		// Validaciones básicas de negocio
+		if peticion.Precio <= 0 || peticion.Sena < 0 || peticion.Sena > 100 {
+			http.Error(w, "Valores fuera de rango", http.StatusBadRequest)
+			return
+		}
+
+		err := repository.ActualizarConfiguracion(api.DB, peticion.Precio, peticion.Sena)
+		if err != nil {
+			http.Error(w, "Error al guardar los precios", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"mensaje": "Precios actualizados"})
+		return
+	}
+
+	http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+}
+
+// ConfigExcepcionesHandler maneja la vista y actualización de vacaciones/feriados
+func (api *APIHandler) ConfigExcepcionesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodGet {
+		excepciones, err := repository.ObtenerExcepciones(api.DB)
+		if err != nil {
+			http.Error(w, "Error al obtener excepciones", http.StatusInternalServerError)
+			return
+		}
+		if excepciones == nil {
+			excepciones = []repository.ExcepcionCalendario{}
+		}
+		json.NewEncoder(w).Encode(excepciones)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		var peticion struct {
+			Accion string `json:"accion"` // "guardar" o "eliminar"
+			ID     int    `json:"id"`
+			Fecha  string `json:"fecha"`
+			Motivo string `json:"motivo"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&peticion); err != nil {
+			http.Error(w, "Datos inválidos", http.StatusBadRequest)
+			return
+		}
+
+		var err error
+		if peticion.Accion == "guardar" {
+			if peticion.Motivo == "" {
+				peticion.Motivo = "Cerrado / Vacaciones"
+			}
+			err = repository.GuardarExcepcion(api.DB, peticion.Fecha, peticion.Motivo)
+		} else if peticion.Accion == "eliminar" {
+			err = repository.EliminarExcepcion(api.DB, peticion.ID)
+		} else {
+			http.Error(w, "Acción desconocida", http.StatusBadRequest)
+			return
+		}
+
+		if err != nil {
+			http.Error(w, "Error al procesar la excepción", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"mensaje": "Calendario actualizado"})
+		return
+	}
+
+	http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 }
