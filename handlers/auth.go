@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func LoginProcesoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// hay que pasarla a una variable de entorno
-	if creds.Usuario == "ramon" && creds.Password == "peluqueria123" {
+	if creds.Usuario == os.Getenv("ADMIN_USER") && creds.Password == os.Getenv("ADMIN_PASS") {
 
 		// coockie por 24 horas, para que no tenga que loguearse cada vez que recarga la página
 		vencimiento := time.Now().Add(24 * time.Hour)

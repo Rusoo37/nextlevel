@@ -4,18 +4,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"nextlevel/config"
 	"nextlevel/handlers"
 	"nextlevel/repository"
 	"nextlevel/services"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// 1. Obtener conexión a la DB a través del paquete config
-	db, err := config.ObtenerConexion()
+
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error crítico al conectar la DB: %v", err)
+		log.Fatal("Error cargando .env: asegúrate de que el archivo exista en la raíz del proyecto")
+	}
+
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		log.Fatal("La variable DB_URL no está configurada en el archivo .env")
+	}
+
+	db, err := config.ObtenerConexion(dbURL)
+	if err != nil {
+		log.Fatalf("Error al conectar a la DB: %v", err)
 	}
 	defer db.Close()
 	fmt.Println("¡Conexión a PostgreSQL exitosa!")

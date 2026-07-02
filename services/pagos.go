@@ -13,8 +13,8 @@ import (
 // GenerarLinkDePago crea la preferencia en Mercado Pago y devuelve la URL para cobrar
 func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string, error) {
 	// 1. Autenticación
-	accessToken := "APP_USR-4638107181664481-070112-eaf8d20647e2a3813e36356163ae22ac-3509855779"
 
+	accessToken := os.Getenv("MP_ACCESS_TOKEN")
 	cfg, err := config.New(accessToken)
 	if err != nil {
 		return "", fmt.Errorf("error configurando mercadopago: %v", err)
