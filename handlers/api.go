@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +19,8 @@ import (
 type APIHandler struct {
 	DB *sql.DB
 }
+
+var telefonoRegex = regexp.MustCompile(`^[0-9+() ]{7,20}$`)
 
 // Disponibilidad maneja la petición GET /api/disponibilidad?fecha=YYYY-MM-DD
 func (api *APIHandler) Disponibilidad(w http.ResponseWriter, r *http.Request) {
@@ -95,9 +98,11 @@ func (api *APIHandler) Reservar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if solicitud.Telefono == "" {
-		// Acá a futuro podrías validar con una expresión regular (Regex)
-		// que solo sean números, pero por ahora con que no esté vacío alcanza.
 		http.Error(w, "El teléfono de contacto es obligatorio", http.StatusBadRequest)
+		return
+	}
+	if !telefonoRegex.MatchString(solicitud.Telefono) {
+		http.Error(w, "El número de teléfono no parece válido. Por favor ingresá solo números.", http.StatusBadRequest)
 		return
 	}
 
@@ -113,8 +118,8 @@ func (api *APIHandler) Reservar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	montoSena := float64(config.PorcentajeSena) / 100 * config.PrecioTurno
-	idTurno, err := repository.CrearReservaTemporal(api.DB, fechaInicio, solicitud.NombreCliente, solicitud.Telefono, solicitud.Email)
+	montoSena := (config.PrecioTurno * float64(config.PorcentajeSena)) / 100.0
+	idTurno, err := repository.CrearReservaTemporal(api.DB, fechaInicio, solicitud.NombreCliente, solicitud.Telefono, montoSena)
 
 	if err != nil {
 		http.Error(w, "El turno ya no está disponible, por favor elegí otro.", http.StatusConflict)

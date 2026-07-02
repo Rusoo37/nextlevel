@@ -63,11 +63,19 @@ function seleccionarHora(botonClickeado, hora) {
 btnReservar.addEventListener('click', async () => {
     const nombre = document.getElementById('nombreCliente').value.trim();
     const telefono = document.getElementById('telefonoCliente').value.trim();
-    const email = document.getElementById('emailCliente').value.trim();
+    const errorSpan = document.getElementById('errorTelefono');
+    const regex = /^\+?[0-9]{7,20}$/;
 
     if (!nombre || !telefono) {
         mensajeError.textContent = "Por favor, completá nombre y teléfono.";
         return;
+    }
+    if (!regex.test(telefono)) {
+        errorSpan.innerText = "⚠️ Número inválido";
+        errorSpan.style.display = 'inline'; 
+        return; 
+    } else {
+        errorSpan.style.display = 'none'; 
     }
 
     btnReservar.disabled = true;
@@ -84,7 +92,6 @@ btnReservar.addEventListener('click', async () => {
                 fecha_hora_inicio: fechaISO,
                 nombre_cliente: nombre,
                 telefono: telefono,
-                email: email
             })
         });
 
@@ -98,9 +105,14 @@ btnReservar.addEventListener('click', async () => {
         window.location.href = data.link_pago;
 
     } catch (error) {
+        const respuesta = await fetch('/api/admin/config/precios');
+        const config = await respuesta.json();
+        
+        // Calculamos la seña tal cual lo hace Go
+        const montoSena = (config.precio_turno * config.porcentaje_sena) / 100;
         mensajeError.textContent = error.message;
         btnReservar.disabled = false;
-        btnReservar.textContent = "Abonar Seña ($7.500)";
+        btnReservar.innerText = `Abonar Seña ($${montoSena})`;
     }
 });
 
@@ -112,7 +124,7 @@ async function cargarMontoSena() {
         // Calculamos la seña tal cual lo hace Go
         const montoSena = (config.precio_turno * config.porcentaje_sena) / 100;
         
-        // Asumiendo que tu botón tiene el id="btnReservar"
+        
         const btnReservar = document.getElementById('btnReservar');
         if (btnReservar) {
             btnReservar.innerText = `Abonar Seña ($${montoSena})`;

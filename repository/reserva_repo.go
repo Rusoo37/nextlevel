@@ -5,24 +5,18 @@ import (
 	"time"
 )
 
-// CrearReservaTemporal intenta guardar un turno bloqueándolo para que el cliente pague
-func CrearReservaTemporal(db *sql.DB, inicio time.Time, nombre, telefono, email string) (int, error) {
-	// Calculamos el fin del turno (30 min después)
+// CrearReservaTemporal intenta guardar un turno bloqueándolo para que el cliente pague la seña. Devuelve el ID del turno insertado o un error.
+func CrearReservaTemporal(db *sql.DB, inicio time.Time, nombre, telefono string, montoSena float64) (int, error) {
 	fin := inicio.Add(30 * time.Minute)
 
-	// Usamos un valor fijo para la seña por ahora (la mitad de 15.000)
-	sena := 7500.00
+	query := `
+        INSERT INTO turnos (fecha_hora_inicio, fecha_hora_fin, nombre_cliente, telefono, estado, monto_senado)
+        VALUES ($1, $2, $3, $4, 'PENDIENTE_PAGO', $5) 
+        RETURNING id
+    `
 
 	var idInsertado int
-	query := `
-		INSERT INTO turnos (fecha_hora_inicio, fecha_hora_fin, nombre_cliente, telefono, email, estado, monto_senado)
-		VALUES ($1, $2, $3, $4, $5, 'PENDIENTE_PAGO', $6) 
-		RETURNING id
-	`
-
-	// Intentamos insertar. Si Juan y María llegan a la vez, el índice único que creamos
-	// hará que a uno de los dos le salte un error acá.
-	err := db.QueryRow(query, inicio, fin, nombre, telefono, email, sena).Scan(&idInsertado)
+	err := db.QueryRow(query, inicio, fin, nombre, telefono, montoSena).Scan(&idInsertado)
 	if err != nil {
 		return 0, err
 	}

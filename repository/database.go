@@ -13,7 +13,6 @@ func InicializarTablas(db *sql.DB) error {
 		fecha_hora_fin TIMESTAMP NOT NULL,
 		nombre_cliente VARCHAR(100),
 		telefono VARCHAR(20),
-		email VARCHAR(100),
 		estado VARCHAR(30) NOT NULL,
 		monto_senado DECIMAL(10,2) DEFAULT 0,
 		id_mercadopago VARCHAR(100),

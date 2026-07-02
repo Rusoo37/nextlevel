@@ -18,8 +18,7 @@ func GenerarHorariosLibres(fecha time.Time, turnosOcupados []models.Turno, turno
 		return disponibles // Devuelve lista vacía, no hay turnos disponibles
 	}
 
-	// 2. Definir horario de atención de ese día (Ajustado para arrancar a las 09:00)
-	// El cierre lo ponemos a las 19:00 para que el bucle permita dar el último turno a las 18:00
+	// 2. Definir horario de atención de ese día arrando a las 9:00 y cerrando a las 19:00
 	horaApertura := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 9, 0, 0, 0, fecha.Location())
 	horaCierre := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 19, 0, 0, 0, fecha.Location())
 
