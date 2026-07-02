@@ -1,5 +1,5 @@
 # 1. Usamos una imagen de Go para construir la app
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 # Instalamos git para descargar dependencias
 RUN apk add --no-cache git
