@@ -18,7 +18,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error cargando .env: asegúrate de que el archivo exista en la raíz del proyecto")
+		log.Println("Error cargando .env: asegúrate de que el archivo exista en la raíz del proyecto")
 	}
 
 	dbURL := os.Getenv("DB_URL")
