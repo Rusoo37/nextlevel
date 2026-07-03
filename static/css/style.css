@@ -122,3 +122,94 @@ input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .bg-gray { background: #e5e7eb; color: #374151; }
+
+/* Estilos para el panel de administración */
+
+.admin-container { 
+    max-width: 800px; 
+    display: flex;
+    flex-direction: column;
+}
+.header-admin { 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center; 
+    width: 100%;
+}
+.div-header-admin {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+table { 
+    width: 100%; 
+    /* border-collapse: collapse;  */
+    margin-top: 20px; 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+}
+th, td { 
+    padding: 12px; 
+    text-align: left; 
+    border-bottom: 1px solid #e5e7eb; 
+}
+th { 
+    background-color: #f9fafb; 
+    color: #374151; 
+    font-weight: 600; 
+}
+.badge { 
+    padding: 4px 8px; 
+    border-radius: 9999px; 
+    font-size: 0.8rem; 
+    font-weight: 600; 
+}
+.bg-green { 
+    background: #d1fae5; 
+    color: #065f46; 
+}
+.bg-orange { 
+    background: #fef3c7; 
+    color: #92400e; 
+}
+
+@media (max-width: 600px) {
+    .admin-container{
+        width: 95%;
+        justify-content: center;
+        align-items: center;
+    }
+    p.subtitle {
+        margin-bottom: 15px;
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+    .header-admin {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .div-header-admin {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+    }
+    .div-header-admin h1 {
+        font-size: 1rem;
+    }
+    .header-admin label {
+        font-size: 0.9rem;
+    }
+    table{
+        font-size: 0.85rem;
+        width: 100%;
+        margin-top: 0;
+        border-collapse: collapse;
+    }
+    th, td {
+        font-size: 0.8rem;
+        padding: 10px 8px; 
+        white-space: nowrap; 
+    }
+}
