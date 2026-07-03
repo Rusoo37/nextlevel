@@ -38,7 +38,8 @@ func GenerarHorariosLibres(fecha time.Time, turnosOcupados []models.Turno, turno
 		}
 	}
 
-	ahora := time.Now()
+	loc, _ := time.LoadLocation("America/Argentina/Buenos_Aires")
+	ahora := time.Now().In(loc)
 	esHoy := fecha.Year() == ahora.Year() && fecha.Month() == ahora.Month() && fecha.Day() == ahora.Day()
 
 	bloqueActual := horaApertura

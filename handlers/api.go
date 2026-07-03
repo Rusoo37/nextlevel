@@ -41,7 +41,9 @@ func (api *APIHandler) Disponibilidad(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2. Parsear la fecha
-	fecha, err := time.Parse("2006-01-02", fechaStr)
+	loc, _ := time.LoadLocation("America/Argentina/Buenos_Aires")
+	fecha, err := time.ParseInLocation("2006-01-02", fechaStr, loc)
+
 	if err != nil {
 		http.Error(w, "Formato de fecha inválido. Usar YYYY-MM-DD", http.StatusBadRequest)
 		return

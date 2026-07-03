@@ -82,8 +82,7 @@ btnReservar.addEventListener('click', async () => {
     btnReservar.textContent = "Redirigiendo a Mercado Pago...";
     mensajeError.textContent = "";
 
-    const fechaISO = `${fechaSeleccionada}T${horaSeleccionada}:00Z`;
-
+const fechaISO = `${fechaSeleccionada}T${horaSeleccionada}:00-03:00`;
     try {
         const respuesta = await fetch('/api/reservar', {
             method: 'POST',
