@@ -10,6 +10,7 @@ import (
 	"nextlevel/handlers"
 	"nextlevel/repository"
 	"nextlevel/services"
+	_ "time/tzdata"
 
 	"github.com/joho/godotenv"
 )
