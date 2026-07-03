@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -165,8 +166,9 @@ func (api *APIHandler) WebhookMercadoPago(w http.ResponseWriter, r *http.Request
 	url := "https://api.mercadopago.com/v1/payments/" + idPago
 	req, _ := http.NewRequest("GET", url, nil)
 
+	tokenMP := os.Getenv("MP_ACCESS_TOKEN")
+	req.Header.Add("Authorization", "Bearer "+tokenMP)
 	// Usamos tu mismo token de prueba para autorizar la pregunta
-	req.Header.Add("Authorization", "Bearer APP_USR-4638107181664481-070112-eaf8d20647e2a3813e36356163ae22ac-3509855779")
 
 	clienteHTTP := &http.Client{}
 	respuestaMP, err := clienteHTTP.Do(req)

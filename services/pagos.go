@@ -30,7 +30,7 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 		webhookURL = "https://perm-cried-papyrus.ngrok-free.dev/api/webhook"
 	} else {
 		// Si hay variable (ej: estás en Render), le pegamos la ruta al final
-		webhookURL = webhookURL + "/api/webhook"
+		webhookURL = webhookURL + "api/webhook"
 	}
 
 	// 4. Definimos qué le estamos cobrando
