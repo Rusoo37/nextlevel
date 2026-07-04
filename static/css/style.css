@@ -21,6 +21,32 @@ body {
     width: 100%;
     max-width: 400px;
 }
+.container-main{
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 400px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.header-main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.formulario-turno{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
 
 h1 {
     text-align: center;
@@ -203,7 +229,7 @@ th {
     }
     table{
         font-size: 0.85rem;
-        width: 100%;
+        width: 95%;
         margin-top: 0;
         border-collapse: collapse;
     }
