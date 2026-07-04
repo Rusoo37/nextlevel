@@ -453,3 +453,35 @@ func (api *APIHandler) ConfigExcepcionesHandler(w http.ResponseWriter, r *http.R
 
 	http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 }
+
+// CancelarTurno recibe el ID por URL y ejecuta la cancelación
+func (api *APIHandler) CancelarTurnoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Leemos el ID del turno de la URL (?id=123)
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		http.Error(w, "Falta el ID del turno", http.StatusBadRequest)
+		return
+	}
+
+	idTurno, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	// Llamamos a la base de datos
+	err = repository.CancelarTurnoBD(api.DB, idTurno)
+	if err != nil {
+		http.Error(w, "Error al cancelar el turno en la base de datos", http.StatusInternalServerError)
+		return
+	}
+
+	// Respondemos que todo salió bien
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Cancelado con éxito"))
+}

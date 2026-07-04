@@ -70,6 +70,7 @@ func main() {
 	http.HandleFunc("/api/admin/config/fijos", handlers.AuthMiddleware(api.ConfigFijosHandler))
 	http.HandleFunc("/api/admin/config/precios", handlers.AuthMiddleware(api.ConfigPreciosHandler))
 	http.HandleFunc("/api/admin/config/excepciones", handlers.AuthMiddleware(api.ConfigExcepcionesHandler))
+	http.HandleFunc("/api/admin/turnos/cancelar", handlers.AuthMiddleware(api.CancelarTurnoHandler))
 
 	// 4. Lanzar servidor
 	fmt.Println("Servidor corriendo en http://localhost:8080")

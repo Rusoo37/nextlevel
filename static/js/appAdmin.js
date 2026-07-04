@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 fechaFiltro.addEventListener('change', (e) => cargarTurnos(e.target.value));
 
 async function cargarTurnos(fecha) {
-    tablaTurnos.innerHTML = '<tr><td colspan="4" style="text-align:center;">Buscando...</td></tr>';
+    tablaTurnos.innerHTML = '<tr><td colspan="5" style="text-align:center;">Buscando...</td></tr>';
     
     try {
         const respuesta = await fetch(`/api/admin/turnos?fecha=${fecha}`);
@@ -21,7 +21,7 @@ async function cargarTurnos(fecha) {
         tablaTurnos.innerHTML = '';
 
         if (turnos.length === 0) {
-            tablaTurnos.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay turnos.</td></tr>';
+            tablaTurnos.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay turnos.</td></tr>';
             return;
         }
 
@@ -36,6 +36,7 @@ async function cargarTurnos(fecha) {
             let badgeClass = 'bg-orange';
             let icon = '⏳';
             
+            
             if (turno.estado === 'CONFIRMADO') {
                 badgeClass = 'bg-green';
                 icon = '✅';
@@ -48,16 +49,46 @@ async function cargarTurnos(fecha) {
                 icon = '🔒';
             }
 
+            let botonCancelar = '';
+            if (turno.estado === 'CONFIRMADO' || turno.estado === 'MANUAL') {
+                botonCancelar = `<button onclick="cancelarTurno(${turno.id})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Cancelar</button>`;
+            }
+
             tr.innerHTML = `
                 <td><strong>${turno.hora}</strong></td>
                 <td>${turno.nombre_cliente}</td>
                 <td>${turno.telefono !== '-' ? `<a href="https://wa.me/549${turno.telefono}" target="_blank" style="color: black;">${turno.telefono}</a>` : '-'}</td>
                 <td><span class="badge ${badgeClass}">${icon} ${turno.estado}</span></td>
+                <td>${botonCancelar}</td> 
             `;
             tablaTurnos.appendChild(tr);
         });
     } catch (error) {
         tablaTurnos.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error de conexión</td></tr>';
+    }
+}
+
+
+// CANCELAR TURNO
+async function cancelarTurno(idTurno) {
+    if (!confirm("¿Seguro que querés cancelar este turno? El horario se va a liberar en la web automáticamente.")) {
+        return;
+    }
+
+    try {
+        const respuesta = await fetch(`/api/admin/turnos/cancelar?id=${idTurno}`, {
+            method: 'POST'
+        });
+
+        if (respuesta.ok) {
+            // Volvemos a cargar la tabla del mismo día que Ramón está mirando
+            cargarTurnos(document.getElementById('fechaFiltro').value);
+        } else {
+            alert("Hubo un problema al cancelar el turno.");
+        }
+    } catch (error) {
+        console.error("Error al cancelar:", error);
+        alert("Error de conexión.");
     }
 }
 
@@ -179,6 +210,12 @@ btnGuardarFijo.addEventListener('click', async () => {
         alert("Por favor, elegí una hora.");
         return;
     }
+
+    if (!hora.endsWith(':00') && !hora.endsWith(':30')) {
+        alert("🚨 Horario inválido para Turno Fijo. Ramón, acordate de agendar solo en horas en punto (:00) o medias horas (:30).");
+        return;
+    }
+
     try {
         const respuesta = await fetch('/api/admin/config/fijos', {
             method: 'POST',
@@ -244,11 +281,16 @@ btnEjecutarBloqueo.addEventListener('click', async () => {
         return;
     }
 
+    if (!hora.endsWith(':00') && !hora.endsWith(':30')) {
+        alert("🚨 Bloqueo inválido. Los horarios de la peluquería deben gestionarse en punto (:00) o en media hora (:30).");
+        return;
+    }
+
     try {
         const respuesta = await fetch('/api/admin/bloquear', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fecha_hora: `${fecha}T${hora}:00Z` })
+            body: JSON.stringify({ fecha_hora: `${fecha}T${hora}:00-03:00` })
         });
 
         if (!respuesta.ok) throw new Error(await respuesta.text());

@@ -260,3 +260,10 @@ func EsDiaExcepcion(db *sql.DB, fecha string) bool {
 	}
 	return existe
 }
+
+// CancelarTurnoBD cambia el estado de un turno específico a 'CANCELADO'
+func CancelarTurnoBD(db *sql.DB, idTurno int) error {
+	query := `UPDATE turnos SET estado = 'CANCELADO' WHERE id = $1`
+	_, err := db.Exec(query, idTurno)
+	return err
+}
