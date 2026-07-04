@@ -79,12 +79,15 @@ input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
     box-sizing: border-box;
     font-family: inherit;
 }
-
+.contenedorHorarios{
+    width: 100%;
+}
 .grid-horarios {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .btn-horario {

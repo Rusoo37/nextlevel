@@ -24,6 +24,7 @@ fechaInput.addEventListener('change', async (e) => {
     formularioReserva.classList.add('hidden');
     grillaHorarios.innerHTML = '<p style="grid-column: span 3; text-align: center;">Cargando...</p>';
     contenedorHorarios.classList.remove('hidden');
+    contenedorHorarios.classList.add('contenedorHorarios');
 
     try {
         const respuesta = await fetch(`/api/disponibilidad?fecha=${fechaSeleccionada}`);
