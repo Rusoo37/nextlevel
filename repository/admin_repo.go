@@ -105,13 +105,13 @@ func ObtenerTurnosDelDia(db *sql.DB, fecha string) ([]TurnoAdmin, error) {
 	return turnos, nil
 }
 
-func BloquearHorarioManual(db *sql.DB, fechaHora time.Time) error {
+func BloquearHorarioManual(db *sql.DB, fechaHora time.Time, nombreCliente string) error {
 	fin := fechaHora.Add(30 * time.Minute)
 	query := `
 		INSERT INTO turnos (fecha_hora_inicio, fecha_hora_fin, nombre_cliente, telefono, estado)
-		VALUES ($1, $2, 'BLOQUEADO', '-', 'MANUAL')
+		VALUES ($1, $2, $3, '-', 'MANUAL')
 	`
-	_, err := db.Exec(query, fechaHora, fin)
+	_, err := db.Exec(query, fechaHora, fin, nombreCliente)
 	return err
 }
 

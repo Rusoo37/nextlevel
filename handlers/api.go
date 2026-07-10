@@ -260,7 +260,8 @@ func (api *APIHandler) BloquearHorarioAdmin(w http.ResponseWriter, r *http.Reque
 
 	// Creamos una estructura rápida solo para leer la hora que manda el admin
 	var peticion struct {
-		FechaHora string `json:"fecha_hora"`
+		FechaHora     string `json:"fecha_hora"`
+		NombreCliente string `json:"nombre_cliente"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&peticion); err != nil {
@@ -276,7 +277,7 @@ func (api *APIHandler) BloquearHorarioAdmin(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Intentamos bloquear el horario
-	err = repository.BloquearHorarioManual(api.DB, fechaParseada)
+	err = repository.BloquearHorarioManual(api.DB, fechaParseada, peticion.NombreCliente)
 	if err != nil {
 		http.Error(w, "Ese horario ya está ocupado o bloqueado.", http.StatusConflict)
 		return

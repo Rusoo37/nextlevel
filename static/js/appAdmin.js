@@ -275,6 +275,7 @@ const btnEjecutarBloqueo = document.getElementById('btnEjecutarBloqueo');
 btnEjecutarBloqueo.addEventListener('click', async () => {
     const fecha = document.getElementById('fechaBloqueoManual').value;
     const hora = document.getElementById('horaBloqueoManual').value;
+    const motivo = document.getElementById('motivoBloqueoManual').value.trim(); 
 
     if (!fecha || !hora) {
         alert("Elegí día y hora para bloquear.");
@@ -286,16 +287,22 @@ btnEjecutarBloqueo.addEventListener('click', async () => {
         return;
     }
 
+    const nombreFinal = motivo !== '' ? motivo : "Turno Bloqueado";
+
     try {
         const respuesta = await fetch('/api/admin/bloquear', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fecha_hora: `${fecha}T${hora}:00-03:00` })
+            body: JSON.stringify({ 
+                fecha_hora: `${fecha}T${hora}:00-03:00`,
+                nombre_cliente: nombreFinal 
+            })
         });
 
         if (!respuesta.ok) throw new Error(await respuesta.text());
         
         document.getElementById('horaBloqueoManual').value = '';
+        document.getElementById('motivoBloqueoManual').value = ''; 
         alert("Horario bloqueado con éxito.");
         
         // Refrescamos la tabla principal si Ramón bloqueó algo en el día que está mirando
