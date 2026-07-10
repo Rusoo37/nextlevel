@@ -48,8 +48,8 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 			// Nota: Cuando subamos a producción, estas URLs también las haremos dinámicas,
 			// pero por ahora está perfecto que apunten a tu dominio real.
 			Success: "https://nextlevel-r3jg.onrender.com/exito",
-			Failure: "https://nextlevel_r3jg.onrender.com/fallo",
-			Pending: "https://nextlevel_r3jg.onrender.com/pendiente",
+			Failure: "https://nextlevel-r3jg.onrender.com/fallo",
+			Pending: "https://nextlevel-r3jg.onrender.com/pendiente",
 		},
 		AutoReturn:        "approved",
 		ExternalReference: fmt.Sprintf("%d", idTurno),
