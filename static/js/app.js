@@ -13,13 +13,29 @@ const formularioReserva = document.getElementById('formularioReserva');
 const btnReservar = document.getElementById('btnReservar');
 const mensajeError = document.getElementById('mensajeError');
 
+// Obtenemos la fecha local exacta evitando el desfase de UTC
+const obtenerFechaLocal = () => {
+    const fecha = new Date();
+    fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
+    return fecha.toISOString().split('T')[0];
+};
+
 // Restringir el calendario para que no elijan fechas pasadas
-const hoy = new Date().toISOString().split('T')[0];
+const hoy = obtenerFechaLocal();
 fechaInput.setAttribute('min', hoy);
 
 // Cuando el usuario elige un día
 fechaInput.addEventListener('change', async (e) => {
     fechaSeleccionada = e.target.value;
+    
+    if (fechaSeleccionada < hoy) {
+        alert("⚠️ Por favor, elegí la fecha de hoy o un día a futuro.");
+        fechaInput.value = ''; // Reseteamos el input
+        contenedorHorarios.classList.add('hidden');
+        formularioReserva.classList.add('hidden');
+        return; // Cortamos la ejecución acá
+    }
+    
     horaSeleccionada = ''; 
     formularioReserva.classList.add('hidden');
     grillaHorarios.innerHTML = '<p style="grid-column: span 3; text-align: center;">Cargando...</p>';
