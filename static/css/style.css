@@ -201,6 +201,64 @@ th {
     background: #fef3c7; 
     color: #92400e; 
 }
+.container-precio-fijo{
+    background-color: #f8fafc; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    border: 1px solid #e2e8f0;
+}
+.div-precio-fijo{
+    display: flex; 
+    gap: 15px; 
+    align-items: flex-end;
+}
+.div-precio-fijo div{
+    display: flex; 
+    flex-direction: column;
+}
+.div-precio-fijo input{
+    width: 120px;
+    padding: 8px; 
+    border-radius: 5px; 
+    border: 1px solid #d1d5db;
+}
+.div-precio-fijo #inputSena{
+    width: 80px; 
+    padding: 8px; 
+    border-radius: 5px; 
+    border: 1px solid #d1d5db;
+}
+.div-turnos-fijos{
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    align-items: flex-end; 
+    justify-content: space-between;
+}
+.div-turnos-fijos #fijoHora{
+    padding: 8px; 
+    border-radius: 5px; 
+    border: 1px solid #d1d5db;
+}
+.form-group-bloqueo{
+    display: flex; 
+    gap: 10px; 
+    align-items: flex-end;
+}
+.form-group-bloqueo div{
+    width: 100%;
+}
+.form-group-bloqueo input{
+    width: 100%;
+    padding: 8px; 
+    border-radius: 5px; 
+    border: 1px solid #d1d5db; 
+    margin:0;
+}
+.form-group-bloqueo input[type="time"]{
+    width: 93%;
+}
 
 @media (max-width: 600px) {
     .admin-container{
@@ -240,5 +298,52 @@ th {
         font-size: 0.8rem;
         padding: 10px 8px; 
         white-space: nowrap; 
+    }
+    .container-precio-fijo{
+        display: flex;
+        flex-direction: column;
+    }
+    .div-precio-fijo{
+        display: flex; 
+        flex-direction: column;
+        gap: 10px; 
+        align-items: flex-start;
+    }
+    .div-precio-fijo div{
+        width: 100%;
+        margin: 0;
+    }
+    .div-precio-fijo input{
+        width: 100%;
+        margin: 0;
+        padding: 10px 0;
+    }
+    .div-turnos-fijos{
+        width: 100%;
+        display: flex; 
+        flex-direction: column;
+        gap: 10px; 
+        margin-bottom: 20px; 
+        align-items: flex-start; 
+    }
+    .div-turnos-fijos div{
+        width: 100%;
+    }
+    .div-turnos-fijos select{
+        width: 100%;
+    }
+    .div-turnos-fijos #fijoHora{
+        width: 100%;
+        padding: 8px 0;
+    }
+    .form-group-bloqueo{
+        display: flex; 
+        width: 100%;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+    .form-group-bloqueo div label,input{
+        width: 100%;
     }
 }

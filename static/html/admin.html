@@ -45,16 +45,16 @@
             <button id="btnCerrarConfig" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">❌</button>
         </div>
         
-        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+        <div class="container-precio-fijo">
             <h3 style="margin-top: 0; margin-bottom: 10px; color: #1e293b;">💰 Configuración de Precios</h3>
-            <div style="display: flex; gap: 15px; align-items: flex-end;">
+            <div class="div-precio-fijo">
                 <div>
                     <label style="font-size: 0.85rem; font-weight: 600;">Precio Total ($):</label>
-                    <input type="number" id="inputPrecio" placeholder="Ej: 15000" style="width: 120px; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                    <input type="number" id="inputPrecio" placeholder="Ej: 15000">
                 </div>
                 <div>
                     <label style="font-size: 0.85rem; font-weight: 600;">Seña (%):</label>
-                    <input type="number" id="inputSena" placeholder="Ej: 50" style="width: 80px; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                    <input type="number" id="inputSena" placeholder="Ej: 50">
                 </div>
                 <button id="btnGuardarPrecios" class="btn-submit" style="margin: 0; padding: 8px 15px; width: auto; background: #3b82f6;">Guardar</button>
             </div>
@@ -66,10 +66,11 @@
         </div>
         <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 15px;">Definí horarios recurrentes (ej: almuerzos, clientes fijos).</p>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-end; justify-content: space-between;">
+        <div class="div-turnos-fijos" >
             <div>
                 <label>Día:</label>
                 <select id="fijoDia" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                    <option value="1">Lunes</option>
                     <option value="2">Martes</option>
                     <option value="3">Miércoles</option>
                     <option value="4">Jueves</option>
@@ -79,7 +80,7 @@
             </div>
             <div>
                 <label>Hora:</label>
-                <input type="time" id="fijoHora" step="1800" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                <input type="time" id="fijoHora" step="1800">
             </div>
             <div style="flex-grow: 1;">
                 <label>Motivo / Cliente:</label>
@@ -114,18 +115,18 @@
         <div style="background-color: #fff1f2; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fecdd3;">
             <h3 style="margin-top: 0; margin-bottom: 10px; color: #9f1239;">Bloquear Horario Específico</h3>
             <p style="font-size: 0.85rem; color: #e11d48; margin-top: 0;">Usalo para imprevistos o sobreturnos en una fecha puntual.</p>
-            <div style="display: flex; gap: 10px; align-items: flex-end;">
+            <div class="form-group-bloqueo">
                 <div>
                     <label>Fecha:</label>
-                    <input type="date" id="fechaBloqueoManual" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+                    <input type="date" id="fechaBloqueoManual">
                 </div>
                 <div>
                     <label>Hora:</label>
-                    <input type="time" id="horaBloqueoManual" step="1800" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db;">
+                    <input type="time" id="horaBloqueoManual" step="1800">
                 </div>
                 <div style="flex-grow: 1;">
                     <label>Motivo / Cliente:</label>
-                    <input type="text" id="motivoBloqueoManual" placeholder="Ej: Imprevisto, Juan..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
+                    <input type="text" id="motivoBloqueoManual" placeholder="Ej: Imprevisto, Juan..." >
                 </div>
                 <button id="btnEjecutarBloqueo" class="btn-submit" style="margin: 0; padding: 10px; width: auto; background: #be123c;">Bloquear Hora</button>
             </div>
@@ -134,7 +135,7 @@
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <h3 style="margin-top: 0; color: #1e293b;">Bloquear Día Completo (Vacaciones)</h3>
             
-            <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
+            <div class="form-group-bloqueo" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
                 <div>
                     <label>Fecha:</label>
                     <input type="date" id="excFecha" style="padding: 8px; border-radius: 5px; border: 1px solid #d1d5db; margin:0;">
