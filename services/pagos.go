@@ -37,7 +37,7 @@ func GenerarLinkDePago(idTurno int, monto float64, nombreCliente string) (string
 	request := preference.Request{
 		Items: []preference.ItemRequest{
 			{
-				Title:       "Seña Turno Peluquería - Ramón",
+				Title:       "Seña Turno Peluquería",
 				Description: fmt.Sprintf("Turno para %s", nombreCliente),
 				Quantity:    1,
 				UnitPrice:   monto,

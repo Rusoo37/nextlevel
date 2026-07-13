@@ -13,13 +13,13 @@ func GenerarHorariosLibres(fecha time.Time, turnosOcupados []models.Turno, turno
 	// Sacamos qué día de la semana es (0=Domingo, 1=Lunes, 2=Martes... 6=Sábado)
 	diaSemana := int(fecha.Weekday())
 
-	// 1. Regla de negocio: Ramón trabaja solo de Martes (2) a Sábado (6)
-	if diaSemana == int(time.Sunday) || diaSemana == int(time.Monday) {
+	// 1. Regla de negocio: Ramón trabaja solo de Lunes (1) a Sábado (6)
+	if diaSemana == int(time.Sunday) {
 		return disponibles // Devuelve lista vacía, no hay turnos disponibles
 	}
 
-	// 2. Definir horario de atención de ese día arrando a las 9:00 y cerrando a las 19:00
-	horaApertura := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 9, 0, 0, 0, fecha.Location())
+	// 2. Definir horario de atención de ese día arrando a las 10:00 y cerrando a las 19:00
+	horaApertura := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 10, 0, 0, 0, fecha.Location())
 	horaCierre := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 19, 0, 0, 0, fecha.Location())
 
 	// Mapa para buscar y bloquear horarios rápidamente (clave: "HH:MM")
