@@ -170,6 +170,22 @@ input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
     align-items: center;
     gap: 15px;
 }
+.table-turnos{
+    width: 100%; 
+    /* border-collapse: collapse;  */
+    margin-top: 20px; 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+}
+.btn-cancelar{
+    background: #ef4444;
+    color: white; 
+    border: none; 
+    padding: 5px 10px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 0.8rem;
+}
 table { 
     width: 100%; 
     /* border-collapse: collapse;  */
@@ -262,7 +278,7 @@ th {
 
 @media (max-width: 600px) {
     .admin-container{
-        width: 95%;
+        width: 100%;
         justify-content: center;
         align-items: center;
     }
@@ -287,6 +303,38 @@ th {
     }
     .header-admin label {
         font-size: 0.9rem;
+    }
+    .table-turnos{
+        font-size: 0.85rem;
+        width: 100%;
+        margin-top: 0;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+   .table-turnos thead th {
+        font-size: 0.7rem;
+        /* width: 20px; <- Puedes quitar esto, en mobile es mejor dejar que se reparta equitativamente */
+        padding: 2px; /* Te sugiero un mínimo de padding para legibilidad */
+        margin: 0; 
+        white-space: normal; /* ¡Clave! Permite que el texto del encabezado baje de línea */
+        word-wrap: break-word; /* Corta palabras muy largas para que no rompan la tabla */
+    }
+    .table-turnos td {
+        word-wrap: break-word; /* Asegura que el contenido de las celdas también se adapte */
+    }
+    .table-turnos tbody td span{
+        font-size: 0.6rem;
+        padding: 2px 4px; 
+        margin: 0;
+    }
+    .table-turnos tbody td button{
+        font-size: 0.6rem;
+        padding: 2px 4px; 
+        margin: 0;
+    }
+    .btn-cancelar{
+        padding: 2px 4px; 
+        font-size: 0.6rem;
     }
     table{
         font-size: 0.85rem;

@@ -51,7 +51,7 @@ async function cargarTurnos(fecha) {
 
             let botonCancelar = '';
             if (turno.estado === 'CONFIRMADO' || turno.estado === 'MANUAL') {
-                botonCancelar = `<button onclick="cancelarTurno(${turno.id})" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">Cancelar</button>`;
+                botonCancelar = `<button onclick="cancelarTurno(${turno.id})" class="btn-cancelar">Cancelar</button>`;
             }
 
             tr.innerHTML = `
