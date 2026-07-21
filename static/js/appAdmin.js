@@ -216,6 +216,25 @@ btnGuardarFijo.addEventListener('click', async () => {
         return;
     }
 
+    let turnoFijoDuplicado = false;
+    document.querySelectorAll('#tablaFijos tr').forEach(fila => {
+        const celdas = fila.querySelectorAll('td');
+        if (celdas.length > 1) { // Nos aseguramos de que no sea la fila de "Cargando..."
+            const diaEnTabla = celdas[0].innerText; // Ej: "Miércoles"
+            const horaEnTabla = celdas[1].innerText; // Ej: "17:30"
+            
+            // Si coincide el día y la hora, encendemos la alarma
+            if (diaEnTabla === diasSemana[dia] && horaEnTabla === hora) {
+                turnoFijoDuplicado = true;
+            }
+        }
+    });
+
+    if (turnoFijoDuplicado) {
+        alert(`🚨 Ya tenés un turno fijo configurado los ${diasSemana[dia]} a las ${hora}. Para cambiarlo, borrá el anterior primero.`);
+        return; // Frenamos todo
+    }
+
     try {
         const respuesta = await fetch('/api/admin/config/fijos', {
             method: 'POST',
@@ -285,6 +304,24 @@ btnEjecutarBloqueo.addEventListener('click', async () => {
     if (!hora.endsWith(':00') && !hora.endsWith(':30')) {
         alert("🚨 Bloqueo inválido. Los horarios de la peluquería deben gestionarse en punto (:00) o en media hora (:30).");
         return;
+    }
+
+    const fechaMirando = document.getElementById('fechaFiltro').value;
+    
+    if (fecha === fechaMirando) {
+        let horarioOcupado = false;
+        document.querySelectorAll('#tablaTurnos tr').forEach(fila => {
+            const celdas = fila.querySelectorAll('td');
+            // Si la primera celda (la hora) coincide con lo que quiere bloquear
+            if (celdas.length > 0 && celdas[0].innerText === hora) {
+                horarioOcupado = true;
+            }
+        });
+
+        if (horarioOcupado) {
+            alert(`🚨 Cuidado: Ya tenés un turno o un bloqueo ocupando las ${hora} de este día.`);
+            return; // Frenamos todo
+        }
     }
 
     const nombreFinal = motivo !== '' ? motivo : "Turno Bloqueado";
