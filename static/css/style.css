@@ -149,6 +149,8 @@ input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
     width: 90%;
     max-width: 700px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 90vh; /* Ocupa como máximo el 90% del alto de la pantalla */
+    overflow-y: auto;
 }
 .bg-gray { background: #e5e7eb; color: #374151; }
 
@@ -310,6 +312,10 @@ th {
         margin-top: 0;
         border-collapse: collapse;
         table-layout: fixed;
+    }
+    .modal-content{
+        padding: 15px; 
+        max-height: 95vh;
     }
    .table-turnos thead th {
         font-size: 0.7rem;

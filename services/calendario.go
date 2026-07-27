@@ -13,14 +13,29 @@ func GenerarHorariosLibres(fecha time.Time, turnosOcupados []models.Turno, turno
 	// Sacamos qué día de la semana es (0=Domingo, 1=Lunes, 2=Martes... 6=Sábado)
 	diaSemana := int(fecha.Weekday())
 
-	// 1. Regla de negocio: Ramón trabaja solo de Lunes (1) a Sábado (6)
+	// 1. Regla de negocio: Ramón no trabaja los Domingos
 	if diaSemana == int(time.Sunday) {
 		return disponibles // Devuelve lista vacía, no hay turnos disponibles
 	}
 
-	// 2. Definir horario de atención de ese día arrando a las 10:00 y cerrando a las 19:00
-	horaApertura := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 10, 0, 0, 0, fecha.Location())
-	horaCierre := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), 19, 0, 0, 0, fecha.Location())
+	// 2. Definir horario de atención dinámico según el día
+	var horaInicio, horaFin int
+
+	switch diaSemana {
+	case int(time.Monday):
+		horaInicio = 12
+		horaFin = 18 // El bucle frena antes de las 18, el último turno será 17:00
+	case int(time.Saturday):
+		horaInicio = 10
+		horaFin = 14 // El bucle frena antes de las 14, el último turno será 13:00
+	default:
+		// Martes, Miércoles, Jueves y Viernes
+		horaInicio = 10
+		horaFin = 18 // El bucle frena antes de las 18, el último turno será 17:00
+	}
+
+	horaApertura := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), horaInicio, 0, 0, 0, fecha.Location())
+	horaCierre := time.Date(fecha.Year(), fecha.Month(), fecha.Day(), horaFin, 0, 0, 0, fecha.Location())
 
 	// Mapa para buscar y bloquear horarios rápidamente (clave: "HH:MM")
 	horariosBloqueados := make(map[string]bool)
@@ -42,12 +57,15 @@ func GenerarHorariosLibres(fecha time.Time, turnosOcupados []models.Turno, turno
 	ahora := time.Now().In(loc)
 	esHoy := fecha.Year() == ahora.Year() && fecha.Month() == ahora.Month() && fecha.Day() == ahora.Day()
 
+	// 5. Generar los turnos bloque a bloque (saltos de 1 hora)
 	bloqueActual := horaApertura
 	for bloqueActual.Before(horaCierre) {
 		horaBloqueTexto := bloqueActual.Format("15:04")
 
+		bloqueActual = bloqueActual.In(loc)
+
 		if esHoy && bloqueActual.Before(ahora) {
-			// Si es hoy y el bloque ya pasó, NO lo mostramos
+			// Si es hoy y el bloque ya pasó, saltamos
 			bloqueActual = bloqueActual.Add(1 * time.Hour)
 			continue
 		}
