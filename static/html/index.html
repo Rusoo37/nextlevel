@@ -3,38 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextLevel</title>
+    <title>NextLevel Peluquería</title>
+    <meta name="description" content="Reserva tu turno en NextLevel Peluquería. Cortes clásicos, fade, modernos y perfilado de barba en nextlevel necochea. ¡Elegí tu horario y asegurá tu lugar!">
+    <meta property="og:title" content="NextLevel Peluquería">
+    <meta property="og:description" content="Agenda tu corte rápido y fácil desde tu celular.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nextlevel91.com.ar">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+<div class="container-general">
+    <div class="container-header">
+        <!-- <img src="/static/img/logo.png" alt="NextLevel Peluquería" class="logo"> -->
+    </div>
+    <div class="container-main">
+        <div class="header-main">
+            <h1>✂️ NextLevel Necochea</h1>
+            <p class="subtitle">Reserva tu turno</p>
+        </div>
+        <div class="formulario-turno">
+            <label for="fechaTurno">Elegí el día:</label>
+        </div>
+        <input type="date" id="fechaTurno">
 
-<div class="container-main">
-    <div class="header-main">
-        <h1>✂️ NextLevel Necochea</h1>
-        <p class="subtitle">Reserva tu turno</p>
-    </div>
-    <div class="formulario-turno">
-        <label for="fechaTurno">Elegí el día:</label>
-    </div>
-    <input type="date" id="fechaTurno">
+        <div id="contenedorHorarios" class="hidden">
+            <label>Horarios disponibles:</label>
+            <div class="grid-horarios" id="grillaHorarios"></div>
+        </div>
 
-    <div id="contenedorHorarios" class="hidden">
-        <label>Horarios disponibles:</label>
-        <div class="grid-horarios" id="grillaHorarios"></div>
+        <div id="formularioReserva" class="hidden">
+            <label>Completá tus datos:</label>
+            <input type="text" id="nombreCliente" placeholder="Tu nombre completo" required>
+            <input type="tel" id="telefonoCliente" placeholder="Teléfono (ej: 2262...)" required>
+            <span id="errorTelefono" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;"></span>
+            
+            <div id="mensajeError"></div>
+            <button id="btnReservar" class="btn-submit">Abonar Seña</button>
+            <div style="margin-bottom: 15px; font-size: 0.85rem; display: flex; align-items: start; gap: 8px;">
+                <input type="checkbox" id="aceptoTerminos" style="margin-top: 3px; width: auto;">
+                <label for="aceptoTerminos" style="font-weight: normal; color: #4b5563;">
+                    Acepto que la seña es un compromiso de asistencia y <strong>no es reembolsable</strong> en caso de no asistir o cancelar con menos de 24hs de anticipación.
+                </label>
+            </div>
+        </div>
     </div>
 
-    <div id="formularioReserva" class="hidden">
-        <label>Completá tus datos:</label>
-        <input type="text" id="nombreCliente" placeholder="Tu nombre completo" required>
-        <input type="tel" id="telefonoCliente" placeholder="Teléfono (ej: 2262...)" required>
-        <span id="errorTelefono" style="color: #dc2626; font-size: 0.8rem; font-weight: bold; display: none;"></span>
-        
-        <div id="mensajeError"></div>
-        <button id="btnReservar" class="btn-submit">Abonar Seña</button>
-    </div>
+    <footer class="footer">
+        <p><strong>NextLevel Peluquería Necochea</strong></p>
+        <p>© 2026 Todos los derechos reservados.</p>
+    </footer>
+    <script src="/static/js/app.js"></script>
 </div>
-
-<script src="/static/js/app.js"></script>
-
 </body>
 </html>

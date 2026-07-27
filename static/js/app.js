@@ -94,6 +94,12 @@ btnReservar.addEventListener('click', async () => {
     } else {
         errorSpan.style.display = 'none'; 
     }
+    const aceptaTerminos = document.getElementById('aceptoTerminos').checked;
+
+    if (!aceptaTerminos) {
+        mensajeError.textContent = "Por favor, aceptá la política de cancelación para continuar.";
+        return;
+    }
 
     btnReservar.disabled = true;
     btnReservar.textContent = "Redirigiendo a Mercado Pago...";
