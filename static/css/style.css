@@ -174,10 +174,29 @@ input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
 
 /* Estilos para el panel de administración */
 
-.admin-container { 
-    max-width: 800px; 
+.container-administrador-caja {
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    position: relative;
+    gap: 2rem;
+    margin-top: 20px;
+}
+
+.admin-container {  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 800px;
 }
 .header-admin { 
     display: flex; 
