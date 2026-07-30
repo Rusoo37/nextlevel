@@ -1,0 +1,144 @@
+/* =========================================
+   ESTILOS DEL CLIENTE (style.css)
+   ========================================= */
+.container-general {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    position: relative;
+    gap: 2rem;
+}
+
+.container-main {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.formulario-turno {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+
+.container-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.contenedorHorarios {
+    width: 100%;
+}
+
+.grid-horarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.btn-horario {
+    padding: 10px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-horario:hover, .btn-horario.selected {
+    background: var(--accent);
+    color: white;
+}
+
+#mensajeError { 
+    color: #dc2626; 
+    font-size: 0.9rem; 
+    text-align: center; 
+    margin-bottom: 10px; 
+}
+
+.footer {
+    width: 100%; 
+    text-align: center; 
+    padding: 20px 0; /* Le damos un poco de respiro arriba y abajo */
+    color: #6b7280; 
+    font-size: 0.85rem; 
+    border-top: 1px solid #e5e7eb;
+    /* ¡El truco de Flexbox! */
+    margin-top: auto; 
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    .container-main {
+        width: 90%; /* Acá le decimos que ocupe el 90% de la pantalla */
+        padding: 20px; /* Achicamos un pelito el padding para ganar espacio interior */
+        box-sizing: border-box; /* Esto es clave para que el padding no sume ancho extra y rompa el 90% */
+    }
+    
+    .container-checkbox input[type="checkbox"] {
+        -webkit-appearance: none;
+        appearance: none;
+        
+        width: 15px !important; 
+        height: 15px;
+        
+        /* 3. Lo dibujamos nosotros (borde, fondo, radio) */
+        border: 2px solid #d1d5db;
+        border-radius: 4px; /* Un poco redondeado, queda más moderno */
+        background-color: white;
+        
+        /* 4. Alineación y comportamiento */
+        cursor: pointer;
+        margin: 0; /* Quitamos márgenes raros */
+        display: grid; /* Para centrar el checkmark */
+        place-content: center;
+    }
+
+    .container-checkbox input[type="checkbox"]::before {
+        content: "✓"; /* Usamos un tilde Unicode */
+        font-size: 0.9rem;
+        font-weight: bold;
+        transform: scale(0); /* Oculto por defecto */
+        transition: 120ms transform ease-in-out;
+        color: white;
+    }
+
+    /* 6. Estilos cuando está seleccionado (:checked) */
+    .container-checkbox input[type="checkbox"]:checked {
+        background-color: var(--accent); /* Usamos tu color azul */
+        border-color: var(--accent);
+    }
+
+    /* 7. Mostramos el tilde cuando está seleccionado */
+    .container-checkbox input[type="checkbox"]:checked::before {
+        transform: scale(1);
+    }
+}
