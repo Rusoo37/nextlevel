@@ -224,14 +224,14 @@ th {
         width: 100%;
         margin-top: 0;
         border-collapse: collapse;
-        table-layout: auto; /* 1. Cambiamos fixed por auto para que el ancho se adapte */
-        display: block;     /* 2. Convertimos la tabla en un bloque... */
+        table-layout: auto; 
+        display: block;     
         overflow-x: auto;
     }
     th, td {
         font-size: 0.7rem;
         padding: 8px 6px; 
-        white-space: normal; /* 4. Cambiamos nowrap por normal para que el texto pueda bajar de línea */
+        white-space: normal; 
         min-width: 80px;
     }
     .table-turnos thead th {
@@ -263,8 +263,15 @@ th {
         gap: 10px;
     }
     .div-precio-fijo div, .div-turnos-fijos div, .form-group-bloqueo div { width: 100%; margin: 0; }
-    .div-precio-fijo input, .div-turnos-fijos #fijoHora { width: 100%; margin: 0; padding: 10px 0; }
+    .div-precio-fijo input { width: 100%; margin: 0; padding: 10px 0; }
     .div-turnos-fijos select { width: 100%; }
+    .div-precio-fijo #inputPrecio{
+        padding: 10px 10px;
+    }
+    .div-turnos-fijos #fijoHora{
+        width: 100%;
+        padding: 10px;
+    }
     
     .form-group-bloqueo {
         flex-direction: column;
