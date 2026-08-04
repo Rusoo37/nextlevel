@@ -24,6 +24,7 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     width: 100%;
     max-width: 800px;
+    margin-bottom: 20px;
 }
 
 .header-admin { 
@@ -143,8 +144,12 @@ th {
     display: flex; 
     gap: 10px; 
     margin-bottom: 20px; 
-    align-items: flex-end; 
+    align-items: flex-end;
     justify-content: space-between;
+}
+.div-turnos-fijos div { 
+    display: flex; 
+    flex-direction: column; 
 }
 .div-turnos-fijos #fijoHora {
     padding: 8px; 
@@ -166,6 +171,28 @@ th {
     margin: 0;
 }
 .form-group-bloqueo input[type="time"] { width: 93%; }
+
+
+/* --- PARCHE DE ALINEACIÓN PERFECTA --- */
+/* Forzamos a que todos los inputs y el select midan exacto 38px de alto */
+.div-precio-fijo input,
+.div-turnos-fijos input,
+.div-turnos-fijos select {
+    height: 38px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important; 
+}
+
+/* Forzamos a que los botones también midan 38px y centramos su texto */
+.div-precio-fijo .btn-submit,
+.div-turnos-fijos .btn-submit {
+    height: 38px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 /* Responsive Admin */
 @media (max-width: 600px) {
@@ -223,7 +250,11 @@ th {
         margin: 0;
     }
 
-    .modal-content { padding: 15px; max-height: 95vh; width: 85%; }
+    .modal-content { 
+        padding: 15px; 
+        max-height: 90vh; 
+        width: 85%; 
+    }
     
     .container-precio-fijo, .div-precio-fijo, .div-turnos-fijos {
         display: flex;
