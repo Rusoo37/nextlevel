@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error en el pago</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <style>
-        .icon { font-size: 4rem; text-align: center; margin: 10px 0; }
-        .text-center { text-align: center; }
-    </style>
 </head>
 <body>
-<div class="container text-center">
-    <div class="icon">❌</div>
-    <h1 style="color: #dc2626;">El pago fue rechazado</h1>
-    <p>Hubo un problema procesando tu tarjeta. Tu turno no pudo ser confirmado.</p>
-    <p>Por favor, intentá nuevamente con otro medio de pago.</p>
-    <br>
-    <a href="/" style="text-decoration: none;">
-        <button class="btn-submit" style="background: #3b82f6;">Volver a intentar</button>
-    </a>
-</div>
+    <div class="container-exito">
+        <div class="container-texto">
+            <!-- Le sacamos la animación del latido para que el error quede fijo -->
+            <div class="icon" style="animation: none;">❌</div>
+            
+            <h1 style="color: #dc2626;">El pago fue rechazado</h1>
+            
+            <p style="color: #4b5563; margin-bottom: 5px;">Hubo un problema procesando tu tarjeta. Tu turno no pudo ser confirmado.</p>
+            <p style="color: #4b5563; font-weight: 600; margin-bottom: 25px;">Por favor, intentá nuevamente con otro medio de pago.</p>
+            
+            <a href="/" style="text-decoration: none; width: 100%;">
+                <!-- Le cambiamos el color al botón para que sea rojo (error) en vez de verde o azul -->
+                <button class="btn-submit" style="background-color: #ef4444;">Volver a intentar</button>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago Pendiente</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <style>
-        .icon { font-size: 4rem; text-align: center; margin: 10px 0; }
-        .text-center { text-align: center; }
-    </style>
 </head>
 <body>
-<div class="container text-center">
-    <div class="icon">⏳</div>
-    <h1 style="color: #f59e0b;">Pago en proceso</h1>
-    <p>Estamos esperando la confirmación de Mercado Pago.</p>
-    <p>Una vez que se acredite el pago, tu turno quedará automáticamente confirmado.</p>
-    <br>
-    <a href="/" style="text-decoration: none;">
-        <button class="btn-submit" style="background: #3b82f6;">Volver al inicio</button>
-    </a>
-</div>
+    <div class="container-exito">
+        <div class="container-texto">
+            <!-- Ícono sin la animación de latido para que quede prolijo -->
+            <div class="icon" style="animation: none;">⏳</div>
+            
+            <h1 style="color: #f59e0b;">Pago en proceso</h1>
+            
+            <p style="color: #4b5563; margin-bottom: 5px;">Estamos esperando la confirmación de Mercado Pago.</p>
+            <p style="color: #4b5563; font-weight: 600; margin-bottom: 25px;">Una vez que se acredite el pago, tu turno quedará automáticamente confirmado.</p>
+            
+            <a href="/" style="text-decoration: none; width: 100%;">
+                <!-- Botón naranja haciendo juego con el título -->
+                <button class="btn-submit" style="background-color: #f59e0b;">Volver al inicio</button>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

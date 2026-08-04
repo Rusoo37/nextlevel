@@ -1,454 +1,102 @@
-:root {
-    --primary: #111827;
-    --accent: #3b82f6;
-    --bg: #f3f4f6;
-}
-
+/* =========================================
+   ESTILOS PARA PANTALLA DE ÉXITO (style.css)
+   ========================================= */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg);
+    width: 100%;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-}
-.container-general{
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    position: relative;
-    gap: 2rem;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f3f4f6; /* Un gris muy clarito para que la tarjeta blanca resalte */
 }
 
-.container {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+.container-exito {
     width: 100%;
-    max-width: 400px;
+    min-height: 100vh; /* Ocupa todo el alto de la pantalla para centrar verticalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box; 
 }
-.container-main{
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    width: 100%;
-    max-width: 400px; 
+
+.container-texto {
+    background: #ffffff;
+    width: 90%;          /* Ocupa el 90% en celulares para dejar un margen lindo */
+    max-width: 450px;    /* Tope máximo para que no se estire en computadoras */
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Sombra suave para efecto tarjeta */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-.header-main{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-.formulario-turno{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-}
-a{
-    text-decoration: none;
-    color: black;
-}
-h1 {
     text-align: center;
-    color: var(--primary);
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-}
-.container-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    font-size: 0.85rem;
-}
-p.subtitle {
-    text-align: center;
-    color: #6b7280;
-    font-size: 0.9rem;
-    margin-bottom: 25px;
-}
-
-label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: block;
-    margin-bottom: 8px;
-    color: #374151;
-}
-
-input[type="date"], input[type="text"], input[type="tel"], input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    margin-bottom: 20px;
     box-sizing: border-box;
-    font-family: inherit;
 }
-.contenedorHorarios{
+
+.icon { 
+    font-size: 4rem; 
+    margin: 0 0 10px 0; 
+    animation: latido 1.5s infinite ease-in-out alternate; 
+}
+
+/* Un detallito sutil de animación para el check */
+@keyframes latido {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+.container-texto h1 {
+    margin: 0 0 15px 0;
+}
+
+.ticket {
     width: 100%;
-}
-.grid-horarios {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.btn-horario {
-    padding: 10px;
-    border: 1px solid var(--accent);
-    background: transparent;
-    color: var(--accent);
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.btn-horario:hover, .btn-horario.selected {
-    background: var(--accent);
-    color: white;
-}
-
-.btn-submit {
-    width: 100%;
-    background: #10b981;
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.btn-submit:hover { background: #059669; }
-.btn-submit:disabled { background: #9ca3af; cursor: not-allowed; }
-.hidden { display: none; }
-#mensajeError { color: #dc2626; font-size: 0.9rem; text-align: center; margin-bottom: 10px; }
-
-/* Estilos para el Modal de Configuración */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal.hidden {
-    display: none;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 25px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 700px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    max-height: 90vh; /* Ocupa como máximo el 90% del alto de la pantalla */
-    overflow-y: auto;
-}
-.bg-gray { background: #e5e7eb; color: #374151; }
-
-/* Estilos para el panel de administración */
-
-.container-administrador-caja {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    position: relative;
-    gap: 2rem;
-    margin-top: 20px;
-}
-
-.admin-container {  
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: white;
-    padding: 25px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    width: 100%;
-    max-width: 800px;
-}
-.header-admin { 
-    display: flex; 
-    justify-content: space-between;
-    align-items: center; 
-    width: 100%;
-}
-.div-header-admin {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.table-turnos{
-    width: 100%; 
-    /* border-collapse: collapse;  */
-    margin-top: 20px; 
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch;
-}
-.btn-cancelar{
-    background: #ef4444;
-    color: white; 
-    border: none; 
-    padding: 5px 10px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    font-size: 0.8rem;
-}
-table { 
-    width: 100%; 
-    /* border-collapse: collapse;  */
-    margin-top: 20px; 
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch;
-}
-th, td { 
-    padding: 12px; 
-    text-align: left; 
-    border-bottom: 1px solid #e5e7eb; 
-}
-th { 
-    background-color: #f9fafb; 
-    color: #374151; 
-    font-weight: 600; 
-}
-.badge { 
-    padding: 4px 8px; 
-    border-radius: 9999px; 
-    font-size: 0.8rem; 
-    font-weight: 600; 
-}
-.bg-green { 
-    background: #d1fae5; 
-    color: #065f46; 
-}
-.bg-orange { 
-    background: #fef3c7; 
-    color: #92400e; 
-}
-.container-precio-fijo{
-    background-color: #f8fafc; 
-    padding: 15px; 
-    border-radius: 8px; 
-    margin-bottom: 20px; 
-    border: 1px solid #e2e8f0;
-}
-.div-precio-fijo{
-    display: flex; 
-    gap: 15px; 
-    align-items: flex-end;
-}
-.div-precio-fijo div{
-    display: flex; 
-    flex-direction: column;
-}
-.div-precio-fijo input{
-    width: 120px;
-    padding: 8px; 
-    border-radius: 5px; 
-    border: 1px solid #d1d5db;
-}
-.div-precio-fijo #inputSena{
-    width: 80px; 
-    padding: 8px; 
-    border-radius: 5px; 
-    border: 1px solid #d1d5db;
-}
-.div-turnos-fijos{
-    display: flex; 
-    gap: 10px; 
-    margin-bottom: 20px; 
-    align-items: flex-end; 
-    justify-content: space-between;
-}
-.div-turnos-fijos #fijoHora{
-    padding: 8px; 
-    border-radius: 5px; 
-    border: 1px solid #d1d5db;
-}
-.form-group-bloqueo{
-    display: flex; 
-    gap: 10px; 
-    align-items: flex-end;
-}
-.form-group-bloqueo div{
-    width: 100%;
-}
-.form-group-bloqueo input{
-    width: 100%;
-    padding: 8px; 
-    border-radius: 5px; 
-    border: 1px solid #d1d5db; 
-    margin:0;
-}
-.form-group-bloqueo input[type="time"]{
-    width: 93%;
-}
-.footer{
-    width: 100%; 
-    text-align: center; 
-    padding: 0; 
-    color: #6b7280; 
-    font-size: 0.85rem; 
-    margin: 0;
-    border-top: 1px solid #e5e7eb;
-    position: absolute;
-    bottom: 0;
+    margin: 15px 0 25px 0;
+    text-align: left;
+    box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
-    .admin-container{
-        width: 100%;
-        justify-content: center;
-        align-items: center;
-    }
-    p.subtitle {
-        margin-bottom: 15px;
-        margin-top: 10px;
-        padding: 0 10px;
-    }
-    .header-admin {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    input[type="checkbox"] {
-        transform: scale(1.2);
-    }
-    .div-header-admin {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-    }
-    .div-header-admin h1 {
-        font-size: 1rem;
-    }
-    .header-admin label {
-        font-size: 0.9rem;
-    }
-    .table-turnos{
-        font-size: 0.85rem;
-        width: 100%;
-        margin-top: 0;
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
-    .modal-content{
-        padding: 15px; 
-        max-height: 95vh;
-    }
-   .table-turnos thead th {
-        font-size: 0.7rem;
-        /* width: 20px; <- Puedes quitar esto, en mobile es mejor dejar que se reparta equitativamente */
-        padding: 2px; /* Te sugiero un mínimo de padding para legibilidad */
-        margin: 0; 
-        white-space: normal; /* ¡Clave! Permite que el texto del encabezado baje de línea */
-        word-wrap: break-word; /* Corta palabras muy largas para que no rompan la tabla */
-    }
-    .table-turnos td {
-        word-wrap: break-word; /* Asegura que el contenido de las celdas también se adapte */
-    }
-    .table-turnos tbody td span{
-        font-size: 0.6rem;
-        padding: 2px 4px; 
-        margin: 0;
-    }
-    .table-turnos tbody td button{
-        font-size: 0.6rem;
-        padding: 2px 4px; 
-        margin: 0;
-    }
-    .btn-cancelar{
-        padding: 2px 4px; 
-        font-size: 0.6rem;
-    }
-    table{
-        font-size: 0.85rem;
-        width: 95%;
-        margin-top: 0;
-        border-collapse: collapse;
-    }
-    th, td {
-        font-size: 0.8rem;
-        padding: 10px 8px; 
-        white-space: nowrap; 
-    }
-    .container-precio-fijo{
-        display: flex;
-        flex-direction: column;
-    }
-    .div-precio-fijo{
-        display: flex; 
-        flex-direction: column;
-        gap: 10px; 
-        align-items: flex-start;
-    }
-    .div-precio-fijo div{
-        width: 100%;
-        margin: 0;
-    }
-    .div-precio-fijo input{
-        width: 100%;
-        margin: 0;
-        padding: 10px 0;
-    }
-    .div-turnos-fijos{
-        width: 100%;
-        display: flex; 
-        flex-direction: column;
-        gap: 10px; 
-        margin-bottom: 20px; 
-        align-items: flex-start; 
-    }
-    .div-turnos-fijos div{
-        width: 100%;
-    }
-    .div-turnos-fijos select{
-        width: 100%;
-    }
-    .div-turnos-fijos #fijoHora{
-        width: 100%;
-        padding: 8px 0;
-    }
-    .form-group-bloqueo{
-        display: flex; 
-        width: 100%;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-    }
-    .form-group-bloqueo div label,input{
-        width: 100%;
-    }
+.ticket p { 
+    margin: 12px 0; 
+    color: #374151; 
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column; /* Apila el título y el valor para mejor lectura en celular */
+    gap: 4px;
+}
+
+.ticket p strong {
+    color: #1f2937;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ticket span {
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+/* Botón (por si no tenés esta clase en un global.css) */
+.btn-submit {
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-submit:hover {
+    background-color: #059669;
 }
