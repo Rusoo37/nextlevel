@@ -9,7 +9,6 @@ import (
 	"nextlevel/config"
 	"nextlevel/handlers"
 	"nextlevel/repository"
-	"nextlevel/services"
 	_ "time/tzdata"
 
 	"github.com/joho/godotenv"
@@ -40,8 +39,8 @@ func main() {
 	}
 	fmt.Println("Estructura de base de datos verificada de manera limpia.")
 
-	services.IniciarLimpiadorTurnos(db)
-	fmt.Println("Limpiador de turnos automático corriendo en segundo plano...")
+	// services.IniciarLimpiadorTurnos(db)
+	// fmt.Println("Limpiador de turnos automático corriendo en segundo plano...")
 
 	// 3. Registrar rutas usando los handlers dedicados
 	fs := http.FileServer(http.Dir("./static"))

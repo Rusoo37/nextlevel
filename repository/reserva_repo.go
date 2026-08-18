@@ -38,7 +38,8 @@ func ConfirmarTurno(db *sql.DB, idTurno int, idMercadoPago string) error {
 // CancelarTurnosExpirados cambia a CANCELADO los turnos que no se pagaron a tiempo
 func CancelarTurnosExpirados(db *sql.DB, minutos int) (int64, error) {
 	// Calculamos qué hora era hace 'X' minutos atrás
-	tiempoLimite := time.Now().Add(-time.Duration(minutos) * time.Minute)
+	// viejo: tiempoLimite := time.Now().Add(-time.Duration(minutos) * time.Minute)
+	tiempoLimite := time.Now().UTC().Add(-time.Duration(minutos) * time.Minute)
 
 	query := `
 		UPDATE turnos 

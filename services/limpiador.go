@@ -1,5 +1,6 @@
 package services
 
+/*
 import (
 	"database/sql"
 	"fmt"
@@ -34,3 +35,4 @@ func IniciarLimpiadorTurnos(db *sql.DB) {
 		}
 	}()
 }
+*/

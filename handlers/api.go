@@ -50,6 +50,13 @@ func (api *APIHandler) Disponibilidad(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filasCanceladas, errLimpieza := repository.CancelarTurnosExpirados(api.DB, 10)
+	if errLimpieza != nil {
+		log.Printf("⚠️ Aviso: no se pudieron limpiar turnos expirados: %v", errLimpieza)
+	} else if filasCanceladas > 0 {
+		log.Printf("🧹 Limpieza Perezosa: %d turno(s) expirado(s) liberado(s).", filasCanceladas)
+	}
+
 	// 3. Buscar turnos ocupados en la DB
 	turnosOcupados, err := repository.ObtenerTurnosPorFecha(api.DB, fecha)
 	if err != nil {
