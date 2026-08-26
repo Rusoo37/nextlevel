@@ -165,6 +165,7 @@ const btnCerrarTerminos = document.getElementById('btnCerrarTerminos');
 // 1. Abrir el modal al hacer clic en el enlace
 linkTerminos.addEventListener('click', function(e) {
     e.preventDefault(); // Evita que la página salte hacia arriba
+    e.stopPropagation(); // <--- Para evitar que el clic se propague y cierre el modal inmediatamente
     modalTerminos.classList.remove('hidden');
 });
 
