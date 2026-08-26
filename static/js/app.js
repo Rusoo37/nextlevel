@@ -155,3 +155,27 @@ async function cargarMontoSena() {
         console.error("Error obteniendo el precio de la seña:", error);
     }
 }
+// ==========================================
+// LÓGICA DEL POPUP DE TÉRMINOS Y CONDICIONES
+// ==========================================
+const linkTerminos = document.getElementById('linkTerminos');
+const modalTerminos = document.getElementById('modalTerminos');
+const btnCerrarTerminos = document.getElementById('btnCerrarTerminos');
+
+// 1. Abrir el modal al hacer clic en el enlace
+linkTerminos.addEventListener('click', function(e) {
+    e.preventDefault(); // Evita que la página salte hacia arriba
+    modalTerminos.classList.remove('hidden');
+});
+
+// 2. Cerrar con la crucecita (❌)
+btnCerrarTerminos.addEventListener('click', function() {
+    modalTerminos.classList.add('hidden');
+});
+
+// 3. Cerrar si el usuario hace clic afuera de la caja blanca (en la parte oscura)
+modalTerminos.addEventListener('click', function(e) {
+    if (e.target === modalTerminos) {
+        modalTerminos.classList.add('hidden');
+    }
+});
