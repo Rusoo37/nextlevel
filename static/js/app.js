@@ -80,8 +80,11 @@ function seleccionarHora(botonClickeado, hora) {
 btnReservar.addEventListener('click', async () => {
     const nombre = document.getElementById('nombreCliente').value.trim();
     const telefono = document.getElementById('telefonoCliente').value.trim();
+    const email = document.getElementById('emailCliente').value.trim();
     const errorSpan = document.getElementById('errorTelefono');
+    const errorEmail = document.getElementById('errorEmail');
     const regex = /^\+?[0-9]{7,20}$/;
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!nombre || !telefono) {
         mensajeError.textContent = "Por favor, completá nombre y teléfono.";
@@ -94,6 +97,15 @@ btnReservar.addEventListener('click', async () => {
     } else {
         errorSpan.style.display = 'none'; 
     }
+
+    if (!regexEmail.test(email)) {
+        errorEmail.innerText = "⚠️ Email inválido";
+        errorEmail.style.display = 'inline';
+        return;
+    } else {
+        errorEmail.style.display = 'none';
+    }
+
     const aceptaTerminos = document.getElementById('aceptoTerminos').checked;
 
     if (!aceptaTerminos) {
@@ -114,6 +126,7 @@ const fechaISO = `${fechaSeleccionada}T${horaSeleccionada}:00-03:00`;
                 fecha_hora_inicio: fechaISO,
                 nombre_cliente: nombre,
                 telefono: telefono,
+                email: email,
             })
         });
 
@@ -134,7 +147,8 @@ const fechaISO = `${fechaSeleccionada}T${horaSeleccionada}:00-03:00`;
         const montoSena = (config.precio_turno * config.porcentaje_sena) / 100;
         mensajeError.textContent = error.message;
         btnReservar.disabled = false;
-        btnReservar.innerText = `Abonar Seña ($${montoSena})`;
+        cargarMontoSena();
+        // btnReservar.innerText = `Abonar Seña ($${montoSena})`;
     }
 });
 

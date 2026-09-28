@@ -3,8 +3,10 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/mail"
 	"os"
 	"regexp"
 	"strconv"
@@ -128,8 +130,13 @@ func (api *APIHandler) Reservar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := mail.ParseAddress(solicitud.Email); err != nil {
+		http.Error(w, "Email inválido", http.StatusBadRequest)
+		return
+	}
+
 	montoSena := (config.PrecioTurno * float64(config.PorcentajeSena)) / 100.0
-	idTurno, err := repository.CrearReservaTemporal(api.DB, fechaInicio, solicitud.NombreCliente, solicitud.Telefono, montoSena)
+	idTurno, err := repository.CrearReservaTemporal(api.DB, fechaInicio, solicitud.NombreCliente, solicitud.Telefono, solicitud.Email, montoSena)
 
 	if err != nil {
 		http.Error(w, "El turno ya no está disponible, por favor elegí otro.", http.StatusConflict)
@@ -195,15 +202,25 @@ func (api *APIHandler) WebhookMercadoPago(w http.ResponseWriter, r *http.Request
 
 	// 4. Verificamos si el pago fue aprobado y sacamos nuestro ID de turno
 	if dataPago.Status == "approved" && dataPago.ExternalReference != "" {
-		idTurno, _ := strconv.Atoi(dataPago.ExternalReference)
+		idTurno, err := strconv.Atoi(dataPago.ExternalReference)
+		if err != nil {
+			log.Printf("external_reference inválida: %q", dataPago.ExternalReference)
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
-		// 5. ¡ACÁ ESTÁ LA MAGIA! Le avisamos a tu base de datos
-		err = repository.ConfirmarTurno(api.DB, idTurno, idPago)
-
+		confirmado, err := repository.ConfirmarTurno(api.DB, idTurno, idPago)
 		if err != nil {
 			log.Printf("🚨 Error al confirmar turno en BD: %v", err)
-		} else {
+			http.Error(w, "error interno", http.StatusInternalServerError) // MP reintenta
+			return
+		}
+
+		if confirmado {
 			log.Printf("✅ ¡ÉXITO! Turno %d confirmado en la base de datos.", idTurno)
+			go api.enviarMailConfirmacion(idTurno)
+		} else {
+			log.Printf("ℹ️ Turno %d no estaba PENDIENTE_PAGO (webhook repetido o turno expirado).", idTurno)
 		}
 	} else {
 		log.Printf("⚠️ El pago %s no está aprobado o no tiene referencia. Estado: %s", idPago, dataPago.Status)
@@ -492,4 +509,35 @@ func (api *APIHandler) CancelarTurnoHandler(w http.ResponseWriter, r *http.Reque
 	// Respondemos que todo salió bien
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Cancelado con éxito"))
+}
+
+// enviarMailConfirmacion envía el mail de confirmación al cliente
+
+func (api *APIHandler) enviarMailConfirmacion(idTurno int) {
+	d, err := repository.ObtenerDatosMail(api.DB, idTurno)
+	if err != nil {
+		log.Printf("mail turno %d: no se pudieron leer los datos: %v", idTurno, err)
+		return
+	}
+	if d.Email == "" {
+		return // turno viejo sin email
+	}
+
+	loc, _ := time.LoadLocation("America/Argentina/Buenos_Aires")
+	inicio := d.Inicio.In(loc)
+
+	err = services.EnviarMailTurno(services.DatosTurno{
+		Nombre: d.Nombre,
+		Email:  d.Email,
+		Fecha:  inicio.Format("02/01/2006"),
+		Hora:   inicio.Format("15:04"),
+		Seña:   fmt.Sprintf("$%.0f", d.Sena),
+	})
+	if err != nil {
+		log.Printf("mail turno %d: error enviando: %v", idTurno, err)
+		return
+	}
+	if err := repository.MarcarMailEnviado(api.DB, idTurno); err != nil {
+		log.Printf("mail turno %d: enviado pero no se pudo marcar: %v", idTurno, err)
+	}
 }

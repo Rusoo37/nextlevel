@@ -9,6 +9,7 @@ type Turno struct {
 	FechaHoraFin    time.Time `json:"fecha_hora_fin"`
 	NombreCliente   string    `json:"nombre_cliente"`
 	Telefono        string    `json:"telefono"`
+	Email           string    `json:"email"`
 	Estado          string    `json:"estado"` // PENDIENTE_PAGO, CONFIRMADO, CANCELADO, MANUAL
 	MontoSenado     float64   `json:"monto_senado"`
 	IDMercadoPago   string    `json:"id_mercadopago"`
@@ -42,4 +43,5 @@ type SolicitudReserva struct {
 	FechaHoraInicio string `json:"fecha_hora_inicio"`
 	NombreCliente   string `json:"nombre_cliente"`
 	Telefono        string `json:"telefono"`
+	Email           string `json:"email"`
 }

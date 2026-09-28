@@ -43,6 +43,11 @@ func InicializarTablas(db *sql.DB) error {
 	CREATE UNIQUE INDEX IF NOT EXISTS idx_turno_unico 
 	ON turnos (fecha_hora_inicio) 
 	WHERE estado IN ('CONFIRMADO', 'PENDIENTE_PAGO', 'MANUAL');
+	
+	-- Agregamos las columnas email y mail_enviado si no existen
+	ALTER TABLE turnos ADD COLUMN IF NOT EXISTS email TEXT;
+	ALTER TABLE turnos ADD COLUMN IF NOT EXISTS mail_enviado BOOLEAN NOT NULL DEFAULT FALSE;
+	
 	`
 
 	_, err := db.Exec(query)
