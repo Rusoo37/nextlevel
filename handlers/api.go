@@ -520,11 +520,10 @@ func (api *APIHandler) enviarMailConfirmacion(idTurno int) {
 		return
 	}
 	if d.Email == "" {
-		return // turno viejo sin email
+		return
 	}
 
-	loc, _ := time.LoadLocation("America/Argentina/Buenos_Aires")
-	inicio := d.Inicio.In(loc)
+	inicio := d.Inicio
 
 	err = services.EnviarMailTurno(services.DatosTurno{
 		Nombre: d.Nombre,
