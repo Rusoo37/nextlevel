@@ -33,17 +33,21 @@ async function cargarTurnos(fecha) {
                 tr.style.backgroundColor = "#eff6ff"; 
             }
 
-            let badgeClass = 'bg-orange';
+                        let badgeClass = 'bg-orange';
             let icon = '⏳';
-            
-            
+
             if (turno.estado === 'CONFIRMADO') {
                 badgeClass = 'bg-green';
                 icon = '✅';
             } else if (turno.estado === 'FIJO') {
-                badgeClass = 'bg-gray'; 
+                badgeClass = 'bg-gray';
                 icon = '🔄';
                 tr.style.backgroundColor = "#f3f4f6";
+            } else if (turno.estado === 'FIJO_SALTADO') {
+                badgeClass = 'bg-gray';
+                icon = '🚫';
+                tr.style.backgroundColor = "#fef2f2";
+                tr.style.opacity = "0.7";
             } else if (turno.estado === 'MANUAL') {
                 badgeClass = 'bg-gray';
                 icon = '🔒';
@@ -52,6 +56,10 @@ async function cargarTurnos(fecha) {
             let botonCancelar = '';
             if (turno.estado === 'CONFIRMADO' || turno.estado === 'MANUAL') {
                 botonCancelar = `<button onclick="cancelarTurno(${turno.id})" class="btn-cancelar">Cancelar</button>`;
+            } else if (turno.estado === 'FIJO') {
+                botonCancelar = `<button onclick="gestionarFijoFecha('saltar', ${turno.id}, '${fecha}')" class="btn-cancelar">Cancelar solo esta fecha</button>`;
+            } else if (turno.estado === 'FIJO_SALTADO') {
+                botonCancelar = `<button onclick="gestionarFijoFecha('restaurar', ${turno.id}, '${fecha}')" class="btn-cancelar" style="background:#10b981;">Restaurar</button>`;
             }
 
             tr.innerHTML = `
@@ -91,6 +99,29 @@ async function cancelarTurno(idTurno) {
         alert("Error de conexión.");
     }
 }
+
+async function gestionarFijoFecha(accion, idFijo, fecha) {
+    const msg = accion === 'saltar'
+        ? "¿Cancelar este turno fijo SOLO para esta fecha? El horario se libera para que otros clientes reserven. Las demás semanas no cambian."
+        : "¿Restaurar este turno fijo para esta fecha? El horario deja de estar disponible en la web.";
+    if (!confirm(msg)) return;
+
+    try {
+        const respuesta = await fetch('/api/admin/turnos/fijo-fecha', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accion: accion, id: idFijo, fecha: fecha })
+        });
+        if (!respuesta.ok) {
+            alert((await respuesta.text()).trim() || "Hubo un problema.");
+            return;
+        }
+        cargarTurnos(fecha);
+    } catch (error) {
+        alert("Error de conexión.");
+    }
+}
+
 
 // ==========================================
 // CERRAR MODALES HACIENDO CLIC AFUERA

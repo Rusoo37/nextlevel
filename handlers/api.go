@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -67,7 +68,7 @@ func (api *APIHandler) Disponibilidad(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. Buscar turnos fijos en la DB para ese día de la semana
-	turnosFijos, err := repository.ObtenerTurnosFijosPorDia(api.DB, int(fecha.Weekday()))
+	turnosFijos, err := repository.ObtenerTurnosFijosPorDia(api.DB, int(fecha.Weekday()), fechaStr)
 	if err != nil {
 		http.Error(w, "Error al consultar turnos fijos", http.StatusInternalServerError)
 		return
@@ -538,5 +539,51 @@ func (api *APIHandler) enviarMailConfirmacion(idTurno int) {
 	}
 	if err := repository.MarcarMailEnviado(api.DB, idTurno); err != nil {
 		log.Printf("mail turno %d: enviado pero no se pudo marcar: %v", idTurno, err)
+	}
+}
+
+// TurnoFijoFechaHandler cancela o restaura un turno fijo para una fecha puntual.
+func (api *APIHandler) TurnoFijoFechaHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var p struct {
+		Accion string `json:"accion"` // "saltar" o "restaurar"
+		ID     int    `json:"id"`
+		Fecha  string `json:"fecha"` // YYYY-MM-DD
+	}
+	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		http.Error(w, "Datos inválidos", http.StatusBadRequest)
+		return
+	}
+	if _, err := time.Parse("2006-01-02", p.Fecha); err != nil || p.ID <= 0 {
+		http.Error(w, "Datos inválidos", http.StatusBadRequest)
+		return
+	}
+
+	var err error
+	switch p.Accion {
+	case "saltar":
+		err = repository.SaltarTurnoFijoFecha(api.DB, p.ID, p.Fecha)
+	case "restaurar":
+		err = repository.RestaurarTurnoFijoFecha(api.DB, p.ID, p.Fecha)
+	default:
+		http.Error(w, "Acción desconocida", http.StatusBadRequest)
+		return
+	}
+
+	switch {
+	case errors.Is(err, repository.ErrHorarioOcupado):
+		http.Error(w, err.Error(), http.StatusConflict)
+	case errors.Is(err, sql.ErrNoRows):
+		http.Error(w, "Turno fijo no encontrado para esa fecha", http.StatusNotFound)
+	case err != nil:
+		log.Printf("error en turno fijo/fecha: %v", err)
+		http.Error(w, "Error al procesar la solicitud", http.StatusInternalServerError)
+	default:
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
 	}
 }

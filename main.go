@@ -65,6 +65,7 @@ func main() {
 	http.HandleFunc("/admin", handlers.AuthMiddleware(handlers.AdminHandler))
 	http.HandleFunc("/api/admin/turnos", handlers.AuthMiddleware(api.AdminTurnosHandler))
 	http.HandleFunc("/api/admin/bloquear", handlers.AuthMiddleware(api.BloquearHorarioAdmin))
+	http.HandleFunc("/api/admin/turnos/fijo-fecha", handlers.AuthMiddleware(api.TurnoFijoFechaHandler))
 
 	http.HandleFunc("/api/admin/config/fijos", handlers.AuthMiddleware(api.ConfigFijosHandler))
 	http.HandleFunc("/api/admin/config/precios", handlers.AuthMiddleware(api.ConfigPreciosHandler))

@@ -37,14 +37,19 @@ func ObtenerTurnosPorFecha(db *sql.DB, fecha time.Time) ([]models.Turno, error) 
 }
 
 // ObtenerTurnosFijosPorDia trae los turnos recurrentes activos para un día de la semana (ej: 5 = Viernes)
-func ObtenerTurnosFijosPorDia(db *sql.DB, diaSemana int) ([]models.TurnoFijo, error) {
+func ObtenerTurnosFijosPorDia(db *sql.DB, diaSemana int, fecha string) ([]models.TurnoFijo, error) {
+
 	query := `
-		SELECT id, dia_semana, hora, nombre_cliente, activo 
-		FROM turnos_fijos 
-		WHERE dia_semana = $1 AND activo = TRUE
+		SELECT f.id, f.dia_semana, f.hora, f.nombre_cliente, f.activo
+		FROM turnos_fijos f
+		WHERE f.dia_semana = $1 AND f.activo = TRUE
+		AND NOT EXISTS (
+			SELECT 1 FROM turnos_fijos_saltados s
+			WHERE s.turno_fijo_id = f.id AND s.fecha = $2::date
+		)
 	`
 
-	rows, err := db.Query(query, diaSemana)
+	rows, err := db.Query(query, diaSemana, fecha)
 	if err != nil {
 		return nil, err
 	}

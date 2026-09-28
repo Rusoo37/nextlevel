@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"sort"
 	"time"
 )
@@ -63,36 +64,46 @@ func ObtenerTurnosDelDia(db *sql.DB, fecha string) ([]TurnoAdmin, error) {
 	diaSemana := int(fechaParseada.Weekday()) // 0=Dom, 1=Lun, ..., 4=Jueves, etc.
 
 	// 3. Buscamos los turnos fijos que caen en ese día de la semana
+	// 3. Turnos fijos de ese día de la semana (marcando los que están saltados en esta fecha)
 	queryFijos := `
-		SELECT hora, nombre_cliente 
-		FROM turnos_fijos 
-		WHERE dia_semana = $1 AND activo = TRUE
+		SELECT f.id, f.hora, f.nombre_cliente,
+		       EXISTS (SELECT 1 FROM turnos_fijos_saltados s
+		               WHERE s.turno_fijo_id = f.id AND s.fecha = $2::date) AS saltado
+		FROM turnos_fijos f
+		WHERE f.dia_semana = $1 AND f.activo = TRUE
 	`
-	rowsFijos, err := db.Query(queryFijos, diaSemana)
+	rowsFijos, err := db.Query(queryFijos, diaSemana, fecha)
 	if err == nil {
 		defer rowsFijos.Close()
 		for rowsFijos.Next() {
+			var tfID int
 			var tfHora string
 			var nombreNull sql.NullString
+			var saltado bool
 
-			rowsFijos.Scan(&tfHora, &nombreNull)
+			if err := rowsFijos.Scan(&tfID, &tfHora, &nombreNull, &saltado); err != nil {
+				continue
+			}
 
-			// Le ponemos un nombre por defecto si está vacío
 			tfNombre := "Bloqueo Fijo"
 			if nombreNull.Valid && nombreNull.String != "" {
 				tfNombre = nombreNull.String
 			}
 
+			estado := "FIJO"
+			if saltado {
+				estado = "FIJO_SALTADO"
+			}
+
 			// Solo lo agregamos si no hay un turno normal pisando esa misma hora
 			if _, existe := turnosMap[tfHora]; !existe {
-				tFijo := TurnoAdmin{
-					ID:            0,
+				turnos = append(turnos, TurnoAdmin{
+					ID:            tfID, // ahora es el ID de la regla fija
 					Hora:          tfHora,
 					NombreCliente: tfNombre,
 					Telefono:      "-",
-					Estado:        "FIJO",
-				}
-				turnos = append(turnos, tFijo)
+					Estado:        estado,
+				})
 			}
 		}
 	}
@@ -265,5 +276,58 @@ func EsDiaExcepcion(db *sql.DB, fecha string) bool {
 func CancelarTurnoBD(db *sql.DB, idTurno int) error {
 	query := `UPDATE turnos SET estado = 'CANCELADO' WHERE id = $1`
 	_, err := db.Exec(query, idTurno)
+	return err
+}
+
+var ErrHorarioOcupado = errors.New("el horario ya fue reservado por otro cliente")
+
+// SaltarTurnoFijoFecha cancela un turno fijo solo para una fecha puntual.
+func SaltarTurnoFijoFecha(db *sql.DB, idFijo int, fecha string) error {
+	res, err := db.Exec(`
+		INSERT INTO turnos_fijos_saltados (turno_fijo_id, fecha)
+		SELECT id, $2::date FROM turnos_fijos
+		WHERE id = $1 AND activo = TRUE AND dia_semana = EXTRACT(DOW FROM $2::date)
+		ON CONFLICT (turno_fijo_id, fecha) DO NOTHING
+	`, idFijo, fecha)
+	if err != nil {
+		return err
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		// O ya estaba saltado (ok), o el id/fecha no corresponden a un fijo válido
+		var existe bool
+		err := db.QueryRow(`
+			SELECT EXISTS(SELECT 1 FROM turnos_fijos_saltados
+			              WHERE turno_fijo_id = $1 AND fecha = $2::date)
+		`, idFijo, fecha).Scan(&existe)
+		if err != nil {
+			return err
+		}
+		if !existe {
+			return sql.ErrNoRows
+		}
+	}
+	return nil
+}
+
+// RestaurarTurnoFijoFecha deshace el salto, salvo que otro cliente ya haya tomado ese horario.
+func RestaurarTurnoFijoFecha(db *sql.DB, idFijo int, fecha string) error {
+	var ocupado bool
+	err := db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1 FROM turnos t
+			JOIN turnos_fijos f ON f.id = $1
+			WHERE DATE(t.fecha_hora_inicio) = $2::date
+			AND to_char(t.fecha_hora_inicio, 'HH24:MI') = f.hora
+			AND t.estado IN ('CONFIRMADO', 'PENDIENTE_PAGO', 'MANUAL')
+		)
+	`, idFijo, fecha).Scan(&ocupado)
+	if err != nil {
+		return err
+	}
+	if ocupado {
+		return ErrHorarioOcupado
+	}
+
+	_, err = db.Exec(`DELETE FROM turnos_fijos_saltados WHERE turno_fijo_id = $1 AND fecha = $2::date`, idFijo, fecha)
 	return err
 }

@@ -38,6 +38,13 @@ func InicializarTablas(db *sql.DB) error {
 		nombre_cliente VARCHAR(100),
 		activo BOOLEAN DEFAULT TRUE
 	);
+
+	CREATE TABLE IF NOT EXISTS turnos_fijos_saltados (
+		id SERIAL PRIMARY KEY,
+		turno_fijo_id INTEGER NOT NULL REFERENCES turnos_fijos(id) ON DELETE CASCADE,
+		fecha DATE NOT NULL,
+		UNIQUE (turno_fijo_id, fecha)
+	);
 	
 	-- Índice único para evitar concurrencia en turnos:
 	CREATE UNIQUE INDEX IF NOT EXISTS idx_turno_unico 
